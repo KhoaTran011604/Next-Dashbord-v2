@@ -21,10 +21,19 @@ const TYPE_OF_DATA_IMG_RETURN = "file";
 const dataInit = {
   name: "",
   price: 0,
+  discount: 0,
   status: "InStock", //OutOfStock
   categoryId: "",
   categoryName: "",
   description: "",
+  brand: "",
+  stock: 0,
+  variants: [],
+  // {
+  //   color: String,
+  //   size: String,
+  //   quantity: Number
+  // }
 };
 const ProductDetailPage = () => {
   const params = useParams();
@@ -150,16 +159,36 @@ const ProductDetailPage = () => {
       });
   };
 
-  const jsonToFormData = (json) => {
+  // const jsonToFormData = (json) => {
+  //   const formData = new FormData();
+  //   Object.entries(json).forEach(([key, value]) => {
+  //     formData.append(
+  //       key,
+  //       value instanceof Object && !(value instanceof File)
+  //         ? JSON.stringify(value)
+  //         : value
+  //     );
+  //   });
+  //   return formData;
+  // };
+  const jsonToFormData = (json: Record<string, any>): FormData => {
     const formData = new FormData();
+
     Object.entries(json).forEach(([key, value]) => {
-      formData.append(
-        key,
-        value instanceof Object && !(value instanceof File)
-          ? JSON.stringify(value)
-          : value
-      );
+      if (
+        value instanceof File ||
+        typeof value === "string" ||
+        typeof value === "number" ||
+        typeof value === "boolean"
+      ) {
+        formData.append(key, value);
+      } else if (value !== null && typeof value === "object") {
+        formData.append(key, JSON.stringify(value));
+      } else if (value === null) {
+        formData.append(key, "");
+      }
     });
+
     return formData;
   };
 
@@ -263,6 +292,7 @@ const ProductDetailPage = () => {
               className="dark:bg-dark-900"
             />
           </div>
+
           <div>
             <HD_Input
               title="Price"
@@ -275,6 +305,53 @@ const ProductDetailPage = () => {
                 setRequest({
                   ...request,
                   price: parseInt(value),
+                })
+              }
+            />
+          </div>
+          <div>
+            <HD_Input
+              title="Brand"
+              name="brand"
+              placeholder=""
+              isItemForm={false}
+              initValue={request.brand}
+              onChange={(value) =>
+                setRequest({
+                  ...request,
+                  brand: value,
+                })
+              }
+            />
+          </div>
+          <div>
+            <HD_Input
+              title="Discount"
+              name="discount"
+              type="number"
+              placeholder=""
+              isItemForm={false}
+              initValue={request.discount.toString()}
+              onChange={(value) =>
+                setRequest({
+                  ...request,
+                  discount: parseInt(value),
+                })
+              }
+            />
+          </div>
+          <div>
+            <HD_Input
+              title="Stock"
+              name="stock"
+              type="number"
+              placeholder=""
+              isItemForm={false}
+              initValue={request.stock.toString()}
+              onChange={(value) =>
+                setRequest({
+                  ...request,
+                  stock: parseInt(value),
                 })
               }
             />
