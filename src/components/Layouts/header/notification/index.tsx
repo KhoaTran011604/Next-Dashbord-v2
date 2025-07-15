@@ -55,7 +55,7 @@ export function Notification() {
       }}
     >
       <DropdownTrigger
-        className="grid size-12 place-items-center rounded-full border bg-gray-2 text-dark outline-none hover:text-primary focus-visible:border-primary focus-visible:text-primary dark:border-dark-4 dark:bg-dark-3 dark:text-white dark:focus-visible:border-primary"
+        className="grid size-12 place-items-center rounded-full border bg-gray-200 text-dark outline-none hover:text-primary focus-visible:border-primary focus-visible:text-primary dark:border-dark-4 dark:bg-dark-3 dark:text-white dark:focus-visible:border-primary"
         aria-label="View Notifications"
       >
         <span className="relative">
@@ -92,7 +92,7 @@ export function Notification() {
               <Link
                 href="#"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-4 rounded-lg px-2 py-1.5 outline-none hover:bg-gray-2 focus-visible:bg-gray-2 dark:hover:bg-dark-3 dark:focus-visible:bg-dark-3"
+                className="flex items-center gap-4 rounded-lg px-2 py-1.5 outline-none hover:bg-gray-200 focus-visible:bg-gray-200 dark:hover:bg-dark-3 dark:focus-visible:bg-dark-3"
               >
                 <Image
                   src={item.image}

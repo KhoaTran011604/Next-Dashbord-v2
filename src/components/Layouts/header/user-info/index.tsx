@@ -83,7 +83,7 @@ export function UserInfo() {
           <Link
             href={"/profile"}
             onClick={() => setIsOpen(false)}
-            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white  dark:bg-gray-800 dark:text-white/90"
+            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-200 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white  dark:bg-gray-800 dark:text-white/90"
           >
             <UserIcon />
 
@@ -93,7 +93,7 @@ export function UserInfo() {
           <Link
             href={"/pages/settings"}
             onClick={() => setIsOpen(false)}
-            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white  dark:bg-gray-800 dark:text-white/90"
+            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-200 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white  dark:bg-gray-800 dark:text-white/90"
           >
             <SettingsIcon />
 
@@ -107,7 +107,7 @@ export function UserInfo() {
 
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6">
           <button
-            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white  dark:bg-gray-800 dark:text-white/90"
+            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-200 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white  dark:bg-gray-800 dark:text-white/90"
             onClick={() => setIsOpen(false)}
           >
             <LogOutIcon />
