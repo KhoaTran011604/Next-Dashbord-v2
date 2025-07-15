@@ -11,7 +11,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/styles/components/ui/alert-dialog";
-import { DeleteProduct, GetAllProduct } from "api/productService";
+import {
+  DeleteCategory,
+  GetAllCategory,
+  SaveCategory,
+  UpdateCategory,
+} from "api/categoryService";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -25,8 +30,7 @@ import HyperTodoTable_v2 from "@/components/HyperTodoTable_v2";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import DefaultHeader from "@/components/default-header";
-import { cn } from "@/styles/lib/utils";
-import { ProductStatus } from "enum/productEnum";
+
 import { PreviewIcon } from "@/components/Tables/icons";
 import {
   DropdownMenu,
@@ -39,6 +43,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { Modal } from "@/components/common/Modal";
+import {
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/styles/components/ui/dialog";
+import HyperFormWrapper from "@/components/HyperFormWrapper";
+import { categorySchema } from "shemas/categorySchema";
+import { HD_Button } from "@/components/common/HD_Button";
 const filterInit = {
   keySearch: "",
   sort: {},
@@ -46,42 +61,94 @@ const filterInit = {
   pageSize: 10,
   sessionCode: Math.random().toString(),
 };
-const ProductPage = () => {
+const categoryInit = { _id: "", name: "" };
+const initData = {
+  name: "",
+};
+const CategoryPage = () => {
   const router = useRouter();
-  const zustan = useStore();
+  const zustand = useStore();
   const queryClient = useQueryClient();
-  const cachedStore = queryClient.getQueryData(["#productList"]);
-  const { isLoading, setIsLoading, openAlert, setOpenAlert } = zustan;
+  const cachedStore = queryClient.getQueryData(["#categoryList"]);
+  const { isLoading, setIsLoading, openAlert, setOpenAlert, open, setOpen } =
+    zustand;
   const [data, setData] = useState([]);
+  const [category, setCategory] = useState(categoryInit);
   const [filterPage, setFilterPage] = useState<Filter>(filterInit);
   const [keySearch, setKeySearch] = useState<string>("");
+
   const [itemDelete, setItemDelete] = useState({ name: "", _id: "" });
   const LoadData = () => {
     if (isLoading) {
       return;
     }
     setIsLoading(true);
-    GetAllProduct(filterPage)
+    GetAllCategory(filterPage)
       .then((response) => {
         if (response.success) {
           setData(response.data);
-          queryClient.setQueryData(["#productList"], () => {
-            return response.data; // thêm mới
-          });
+          const queryClient = useQueryClient();
+          const cachedStore = queryClient.getQueryData(["#categoryList"]);
         }
       })
       .catch((err) => console.log(err))
       .finally(() => setIsLoading(false));
   };
+  const handleSaveCategory = () => {
+    if (isLoading) {
+      return;
+    }
+    setIsLoading(true);
+
+    SaveCategory({ name: category.name })
+      .then((res) => {
+        if (res.success) {
+          toast.success("Create Success!", {
+            position: "bottom-right",
+          });
+          setOpen(false);
+          LoadData();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+  const handleUpdateCategory = () => {
+    if (isLoading) {
+      return;
+    }
+    setIsLoading(true);
+    UpdateCategory(category._id, category)
+      .then((res) => {
+        if (res.success) {
+          toast.success("Update Success!", {
+            position: "bottom-right",
+          });
+          setOpen(false);
+          LoadData();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
   const handleViewDetail = (id) => {
-    router.push(`/products/${id}`);
+    setOpen(true);
+    //router.push(`/categories/${id}`);
   };
   const handleDeleteConform = (item) => {
     setItemDelete(item);
     setOpenAlert(true);
   };
   const handleDelete = (id) => {
-    DeleteProduct(id, {}).then((res) => {
+    DeleteCategory(id, {}).then((res) => {
       if (res.success) {
         LoadData();
         toast.success("Delete Success !", {
@@ -93,6 +160,11 @@ const ProductPage = () => {
         });
       }
     });
+  };
+  const handleSubmit = () => {
+    console.log("submit");
+
+    category._id.length > 0 ? handleUpdateCategory() : handleSaveCategory();
   };
   const onDebounce = useCallback(
     debounce((term) => {
@@ -126,81 +198,22 @@ const ProductPage = () => {
       enableHiding: false,
     }),
     columnHelper.accessor("name", {
-      header: (info) => <DefaultHeader info={info} name="Info" />,
-      cell: (info) => {
-        return (
-          <div className="flex min-w-fit items-center gap-3  justify-start">
-            <img
-              src={
-                info.row.original.images.length > 0
-                  ? info.row.original.images[0].imageAbsolutePath
-                  : "/images/empty.png"
-              }
-              loading="lazy"
-              className="aspect-[6/5] w-15 rounded-[5px] object-cover"
-              width={60}
-              height={50}
-              alt={"Image for product " + info.row.original.name}
-              role="presentation"
-            />
-            <div>{info.row.original.name}</div>
-          </div>
-        );
-      },
+      header: (info) => <DefaultHeader info={info} name="Name" />,
+      cell: (info) => info.getValue(),
     }),
-    columnHelper.accessor("price", {
-      header: (info) => <DefaultHeader info={info} name="Price" />,
-      cell: (info) => {
-        return (
-          <div className="min-w-[155px] ">
-            <h5 className="text-dark dark:text-white">
-              {info.row.original.name}
-            </h5>
-            <p className="mt-[3px] text-body-sm font-medium">
-              {`${info.row.original.price} VNĐ`}
-            </p>
-          </div>
-        );
-      },
-    }),
-    columnHelper.accessor("categoryName", {
-      header: (info) => <DefaultHeader info={info} name="Category" />,
-      cell: (info) => {
-        return info.getValue() || "_";
-      },
-    }),
-    columnHelper.accessor("status", {
-      header: (info) => <DefaultHeader info={info} name="Status" />,
-      cell: (info) => {
-        return (
-          <div
-            className={cn(
-              "max-w-fit rounded-full px-3.5 py-1 text-sm font-medium",
-              {
-                "bg-[#219653]/[0.08] text-[#219653]":
-                  info.row.original.status === ProductStatus.inStock,
-                "bg-[#D34053]/[0.08] text-[#D34053]":
-                  info.row.original.status === ProductStatus.outOfStock,
-                "bg-[#FFA70B]/[0.08] text-[#FFA70B]":
-                  info.row.original.status === ProductStatus.pending,
-              }
-            )}
-          >
-            {info.row.original.status}
-          </div>
-        );
-      },
-    }),
-    // ✅ Dùng display thay vì accessor cho cột không có thật trong `Task`
+
     columnHelper.display({
       id: "actions",
       enableSorting: false,
       header: (info) => <DefaultHeader info={info} name="Actions" />,
       cell: ({ row }) => (
-        <div className="flex items-center justify-end gap-x-3.5">
+        <div className="flex items-center justify-start gap-x-3.5">
           <button
             className="hover:text-primary"
-            onClick={() => handleViewDetail(row.original._id)}
+            onClick={() => {
+              setCategory(row.original);
+              setOpen(true);
+            }}
           >
             <span className="sr-only">View Invoice</span>
             <PreviewIcon />
@@ -258,10 +271,7 @@ const ProductPage = () => {
       enableHiding: false,
     }),
   ];
-  // useEffect(() => {
-  //   LoadData();
-  //   console.log("re-render");
-  // }, [filterPage]);
+
   const isFirstLoad = useRef(true); // 👈 đánh dấu lần render đầu tiên
   console.log("cachedStore", cachedStore);
 
@@ -278,7 +288,7 @@ const ProductPage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Products" />
+      <Breadcrumb pageName="Categories" />
       <AlertModal openAlert={openAlert} setOpenAlert={setOpenAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -295,6 +305,60 @@ const ProductPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertModal>
+      <Modal open={open} setOpen={setOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>
+              {category._id.length > 0 ? "Update Product" : "Add Product"}
+            </DialogTitle>
+            {/* <DialogDescription>
+                                Make changes to your profile here. Click save when you&apos;re
+                                done.
+                            </DialogDescription> */}
+          </DialogHeader>
+          <div className="">
+            <HyperFormWrapper
+              schema={categorySchema}
+              defaultValues={initData}
+              onSubmit={(e) => {
+                handleSubmit();
+              }}
+              className="mx-auto max-w-md"
+            >
+              <HD_Input
+                title="Name"
+                name="name"
+                placeholder="Press product name"
+                type="text"
+                isItemForm={true}
+                initValue={category.name}
+                onChange={(value) =>
+                  setCategory({
+                    ...category,
+                    name: value,
+                  })
+                }
+              />
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setCategory(categoryInit);
+                      setOpen(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button type="submit" onClick={() => {}}>
+                  {category._id.length > 0 ? "Update" : "Add"}
+                </Button>
+              </DialogFooter>
+            </HyperFormWrapper>
+          </div>
+        </DialogContent>
+      </Modal>
       <div className="flex justify-between items-center">
         <HD_Input
           name="search"
@@ -310,8 +374,8 @@ const ProductPage = () => {
         />
         <button
           onClick={() => {
-            //handleSubmit();
-            router.push("/products/add");
+            setCategory(categoryInit);
+            setOpen(true);
           }}
           className="my-2 px-4 py-2 bg-black text-white rounded-lg"
         >
@@ -325,17 +389,10 @@ const ProductPage = () => {
           <HyperTodoTable_v2
             datas={data}
             columns={columns}
-            setOpen={() => {}}
-            handleCompletedTask={() => {}}
-            setTask={() => {}}
-            setOpenAlert={setOpenAlert}
-            viewCallback={(id) => {
-              handleViewDetail(id);
+            onRowDoubleClick={(item) => {
+              setCategory(item);
+              setOpen(true);
             }}
-            deleteCallback={(item) => {
-              handleDeleteConform(item);
-            }}
-            onRowDoubleClick={(item) => router.push(`/products/${item._id}`)}
           />
         )}
       </div>
@@ -343,4 +400,4 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+export default CategoryPage;

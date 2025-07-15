@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { HD_InputProps } from "types/MainType";
 
-const HD_Input = ({
+const HD_TextArea = ({
   title,
   isItemForm = false,
   name,
@@ -47,12 +47,11 @@ const HD_Input = ({
             iconPosition === "left" ? "[&_svg]:left-4.5" : "[&_svg]:right-4.5"
           )}
         >
-          <input
-            type={type}
+          <textarea
             {...(isItemForm ? formContext.register(name) : {})}
             placeholder={placeholder}
             className={cn(
-              "h-11 w-full rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition focus:border-primary disabled:cursor-default disabled:bg-gray-2 data-[active=true]:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary dark:disabled:bg-dark dark:data-[active=true]:border-primary",
+              "w-full rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition focus:border-primary disabled:cursor-default disabled:bg-gray-2 data-[active=true]:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary dark:disabled:bg-dark dark:data-[active=true]:border-primary",
               type === "file"
                 ? getFileStyles(fileStyleVariant!)
                 : "px-5.5 py-3 text-dark placeholder:text-dark-6 dark:text-white",
@@ -84,4 +83,4 @@ function getFileStyles(variant: "style1" | "style2") {
   }
 }
 
-export default HD_Input;
+export default HD_TextArea;

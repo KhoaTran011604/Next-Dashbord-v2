@@ -171,51 +171,7 @@ const AllTasks = () => {
           <LottieComponent />
         ) : (
           <div>
-            {/* <Table>
-                                <TableCaption>A list of todos.</TableCaption>
-                                <TableHeader>
-                                    <TableRow>
-                                    <TableHead className="w-[100px]" onClick={()=>handleSort("title")}>Title</TableHead>
-                                    <TableHead onClick={()=>handleSort("title")}>Status</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {tasks.length > 0 && tasks.map((task) => (
-                                    <TableRow key={task._id} onDoubleClick={()=>{setTask(task);setOpen(true)}}>
-                                        <TableCell className="font-medium min-w-[300px]">{task.title}</TableCell>
-                                        <TableCell className="min-w-[100px]">{task.completed  ? (
-                                            <Badge
-                                                variant="secondary"
-                                                className="bg-blue-500 text-white dark:bg-blue-600"
-                                            >
-                                                <BadgeCheckIcon />
-                                                Completed
-                                            </Badge>
-                                        ):"_"}</TableCell>
-                                        <TableCell className="font-medium">
-                                            <button className="px-4 py-2 rounded-md dark:bg-gray-800 bg-black text-white" onClick={() => handleCompletedTask(task._id)} disabled={task.completed}>Complete</button>
-                                        </TableCell>
-                                        <TableCell className="font-medium">
-                                            <button className="px-4 py-2 rounded-md dark:bg-gray-800 bg-black text-white" onClick={() => {
-                                                setTask(task)
-                                                setOpenAlert(true)
-                                            }} >Delete</button>
-                                        </TableCell>
-
-                                    </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                            <MyPagination 
-                                filterPage={filterPage} 
-                                setFilterPage={(data)=>{
-                                    setFilterPage({
-                                        ...filterPage,
-                                        ...data
-                                    })
-                                }} 
-                                totalRecords={totalRecords}
-                            /> */}
+            
             <TodoTable2
               tasks={tasks}
               setOpen={setOpen}

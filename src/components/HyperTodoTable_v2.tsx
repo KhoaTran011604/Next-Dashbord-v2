@@ -8,19 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Task } from "types/MainType";
-import DefaultHeader from "./default-header";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import {
   ColumnDef,
-  createColumnHelper,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
@@ -28,123 +18,26 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "./ui/button";
-import { BadgeCheckIcon, MoreVertical } from "lucide-react";
-import { useState } from "react";
-import { Badge } from "@/styles/components/ui/badge";
 
-interface HyperTodoTableProps {
-  tasks: Task[];
-  handleCompletedTask: (id: string) => void;
-  setTask: (task: Task) => void;
-  setOpen: (open: boolean) => void;
-  setOpenAlert: (open: boolean) => void;
+import { useState } from "react";
+
+interface HyperTodoTable_v2Props {
+  datas: any[];
+  columns: ColumnDef<any, any>[];
+  onRowDoubleClick: (item: any) => void;
 }
 
-const columnHelper = createColumnHelper<Task>();
-
-export default function HyperTodoTable({
-  tasks,
-  handleCompletedTask,
-  setOpen,
-  setTask,
-  setOpenAlert,
-}: HyperTodoTableProps) {
-  const columns: ColumnDef<Task, any>[] = [
-    columnHelper.display({
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    }),
-    columnHelper.accessor("title", {
-      header: (info) => <DefaultHeader info={info} name="Title" />,
-      cell: (info) => info.getValue(),
-    }),
-    columnHelper.accessor("completed", {
-      header: (info) => <DefaultHeader info={info} name="Completed" />,
-      cell: (info) =>
-        info.row.original.completed ? (
-          <Badge
-            variant="secondary"
-            className="bg-blue-500 text-white dark:bg-blue-600"
-          >
-            <BadgeCheckIcon className="mr-1 h-4 w-4" />
-            Completed
-          </Badge>
-        ) : null,
-    }),
-    // ✅ Dùng display thay vì accessor cho cột không có thật trong `Task`
-    columnHelper.display({
-      id: "actions",
-      header: (info) => <DefaultHeader info={info} name="Actions" />,
-      cell: ({ row }) => (
-        <div className="flex gap-4">
-          <button
-            className="px-4 py-2 rounded-md dark:bg-gray-800 bg-black text-white"
-            onClick={() => handleCompletedTask(row.original._id)}
-            disabled={row.original.completed}
-          >
-            Complete
-          </button>
-          <button
-            className="px-4 py-2 rounded-md dark:bg-gray-800 bg-black text-white"
-            onClick={() => {
-              setTask(row.original);
-              setOpenAlert(true);
-            }}
-          >
-            Delete
-          </button>
-        </div>
-      ),
-    }),
-    columnHelper.display({
-      id: "more",
-      cell: ({ row }) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant={"ghost"} className="h-8 w-8">
-              <MoreVertical className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            onCloseAutoFocus={(e) => e.preventDefault()}
-          >
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Copy</DropdownMenuItem>
-            <DropdownMenuItem>Paste</DropdownMenuItem>
-            <DropdownMenuItem>Cut</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    }),
-  ];
-
+export default function HyperTodoTable_v2({
+  datas,
+  columns,
+  onRowDoubleClick = () => {},
+}: HyperTodoTable_v2Props) {
   return (
-    <DataTable<Task, any>
+    <DataTable<any, any>
       columns={columns}
-      data={tasks}
+      data={datas}
       onDoubleClick={(row) => {
-        setTask(row.original);
-        setOpen(true);
+        onRowDoubleClick(row.original);
       }}
     />
   );

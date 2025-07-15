@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       Cookies.set("token_info", encrypted, { expires: 7 }); // lưu 7 ngày
 
       setIsAuthenticated(true);
-      router.push("/table-tasks");
+      router.push("/products");
       return { success: true, data: dataToken };
     } else {
       return { success: false, data: {} };
@@ -85,7 +85,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
   const vertifyToken = async () => {
     var token_info = getTokensFromCookies();
-    console.log("token_info", token_info);
     if (!token_info) {
       return;
     }
@@ -94,7 +93,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (response.success) {
       setIsAuthenticated(true);
       setUser(response.data);
-      router.push("/table-tasks");
+      router.push("/products");
     } else if (!response.success && response.message === "TokenExpiredError") {
       //1.Call API to refresh token
 
@@ -115,10 +114,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         vertifyToken();
       } else {
         //+Vertify false -> router push to login
-        router.push("/login");
+        router.push("/auth/sign-in");
       }
     } else {
-      router.push("/login");
+      router.push("/auth/sign-in");
     }
   };
 

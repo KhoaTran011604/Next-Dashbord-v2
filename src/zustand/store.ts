@@ -1,11 +1,4 @@
-import {
-  CompletedTodo,
-  CreateTodo,
-  DeleteTodo,
-  GetAllTodo_WithoutPanigation,
-  GetCompletedTodo_WithoutPanigation,
-  UpdateTodo,
-} from 'api/todoService';
+
 import { Filter, Task } from 'types/MainType';
 import { create } from 'zustand';
 
@@ -13,6 +6,7 @@ interface StoreState {
   tasks: Task[];
   task: Task;
   open: boolean;
+  openAlert: boolean;
   error: boolean;
   filterPage: Filter;
   isLoading: boolean;
@@ -20,6 +14,7 @@ interface StoreState {
   setTasks: (data: Task[]) => void;
   setTask: (data: Task) => void;
   setOpen: (status: boolean) => void;
+  setOpenAlert: (status: boolean) => void;
   setError: (status: boolean) => void;
   setIsLoading: (status: boolean) => void;
   setTotalRecords: (number: number) => void;
@@ -44,6 +39,7 @@ const useStore = create<StoreState>((set, get) => ({
   tasks: [],
   task: { _id: '', title: '', completed: false },
   open: false,
+  openAlert: false,
   error: false,
   filterPage: filterInit,
   isLoading: false,
@@ -56,6 +52,9 @@ const useStore = create<StoreState>((set, get) => ({
   },
   setOpen: (status: boolean) => {
     set({ open: status });
+  },
+  setOpenAlert: (status: boolean) => {
+    set({ openAlert: status });
   },
   setError: (status: boolean) => {
     set({ error: status });

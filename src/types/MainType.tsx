@@ -51,3 +51,20 @@ export type LoginProps = {
   email: string;
   password: string;
 };
+export type Product = {
+  name: string;
+  price: number;
+  categoryId: string;
+  descripton: string;
+  images: any[];
+};
+
+export type ItemReturn = {
+  name: string;
+  _id: string;
+};
+export interface HD_TableProps {
+  dataInit: Product[];
+  viewCallback: (id: string) => void;
+  deleteCallback: (item: ItemReturn) => void;
+}

@@ -1,21 +1,23 @@
-import { HeaderContext } from '@tanstack/react-table';
-import { FaSortAlphaDown, FaSortAlphaUp } from 'react-icons/fa';
+import { HeaderContext } from "@tanstack/react-table";
+import { FaSortAlphaDown, FaSortAlphaUp } from "react-icons/fa";
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
   ContextMenuContent,
   ContextMenuTrigger,
-} from './ui/context-menu';
-import { Task } from 'types/MainType';
+} from "./ui/context-menu";
+import { Task } from "types/MainType";
 
 interface DefaultHeaderProps<T> {
   info: HeaderContext<Task, T>;
   name: string;
+  className?: string;
 }
 
 export function DefaultHeader<TValue>({
   info,
   name,
+  className = "",
 }: DefaultHeaderProps<TValue>) {
   const { table } = info;
   const sorted = info.column.getIsSorted();
@@ -25,13 +27,13 @@ export function DefaultHeader<TValue>({
       <ContextMenuTrigger
         onPointerDown={(e) => {
           e.preventDefault();
-          info.column.toggleSorting(info.column.getIsSorted() === 'asc');
+          info.column.toggleSorting(info.column.getIsSorted() === "asc");
         }}
-        className="w-full h-full flex flex-row items-center justify-start gap-4 cursor-default"
+        className={`w-full h-full flex flex-row items-center justify-start gap-4 cursor-default ${className}`}
       >
         {name}
-        {sorted === 'asc' && <FaSortAlphaDown />}
-        {sorted === 'desc' && <FaSortAlphaUp />}
+        {sorted === "asc" && <FaSortAlphaDown />}
+        {sorted === "desc" && <FaSortAlphaUp />}
       </ContextMenuTrigger>
       <ContextMenuContent
         onCloseAutoFocus={(e) => e.preventDefault()}

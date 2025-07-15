@@ -14,22 +14,34 @@ export const NAV_DATA = [
           },
         ],
       },
-      {
-        title: "1.Tasks",
-        icon: Icons.Alphabet,
-        url: "/table-tasks",
-        items: [],
-      },
-      {
-        title: "2.Tasks",
-        icon: Icons.Alphabet,
-        url: "/tanstack-table-tasks",
-        items: [],
-      },
+      // {
+      //   title: "1.Tasks",
+      //   icon: Icons.Alphabet,
+      //   url: "/table-tasks",
+      //   items: [],
+      // },
+      // {
+      //   title: "2.Tasks",
+      //   icon: Icons.Alphabet,
+      //   url: "/tanstack-table-tasks",
+      //   items: [],
+      // },
       {
         title: "Products",
         icon: Icons.Alphabet,
         url: "/products",
+        items: [],
+      },
+      {
+        title: "Categories",
+        icon: Icons.Alphabet,
+        url: "/categories",
+        items: [],
+      },
+      {
+        title: "Orders",
+        icon: Icons.Alphabet,
+        url: "/orders",
         items: [],
       },
 

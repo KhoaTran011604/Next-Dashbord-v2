@@ -57,8 +57,6 @@ export default function SigninWithPassword() {
     mutationFn: async () => Login(),
     onSuccess: async (dataLogin) => {
       if (dataLogin.success) {
-        console.log("dataLogin", dataLogin);
-
         const [todos, completed] = await Promise.all([
           GetAllTodo(),
           GetCompletedTodo(),
