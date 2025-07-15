@@ -76,8 +76,8 @@ export default function SigninWithPassword() {
       <HyperFormWrapper
         schema={loginSchema}
         defaultValues={initData}
-        onSubmit={(e) => {
-          handleSubmit(e);
+        onSubmit={() => {
+          handleSubmit();
         }}
         className="mx-auto max-w-md"
       >

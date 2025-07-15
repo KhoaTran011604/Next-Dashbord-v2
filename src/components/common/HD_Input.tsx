@@ -1,6 +1,5 @@
 import { cn } from "../../styles/lib/utils";
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import { useFormContext } from "react-hook-form";
 import { HD_InputProps } from "types/MainType";
 
@@ -11,23 +10,27 @@ const HD_Input = ({
   type = "text",
   placeholder = "",
   iconPosition = "right",
-  fileStyleVariant = "",
+  fileStyleVariant = "style1",
   height = "sm",
   disabled = false,
   icon = <></>,
-
   initValue,
   onChange,
 }: HD_InputProps) => {
-  const [value, setValue] = useState(initValue);
+  const [value, setValue] = useState<string | number | undefined>(initValue);
   const formContext = isItemForm ? useFormContext() : null;
   const errors = formContext?.formState.errors;
-  const handleChange = (e) => {
-    setValue(e.target.value);
-    onChange(e.target.value);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newValue = type === "file" ? e.target.files?.[0] : e.target.value;
+    setValue(newValue as string);
+    onChange?.(newValue);
   };
+
   useEffect(() => {
-    initValue && setValue(initValue);
+    if (initValue !== undefined) {
+      setValue(initValue);
+    }
   }, [initValue]);
 
   return (
@@ -48,26 +51,27 @@ const HD_Input = ({
           )}
         >
           <input
+            id={name}
             type={type}
-            {...(isItemForm ? formContext.register(name) : {})}
+            {...(isItemForm ? formContext?.register(name) : {})}
             placeholder={placeholder}
             className={cn(
               "h-11 w-full rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition focus:border-primary disabled:cursor-default disabled:bg-gray-200 data-[active=true]:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary dark:disabled:bg-dark dark:data-[active=true]:border-primary",
               type === "file"
-                ? getFileStyles(fileStyleVariant!)
+                ? getFileStyles(fileStyleVariant as "style1" | "style2")
                 : "px-5.5 py-3 text-dark placeholder:text-dark-6 dark:text-white",
               iconPosition === "left" && "pl-12.5",
               height === "sm" && "py-2.5"
             )}
             disabled={disabled}
-            value={value}
+            value={type !== "file" ? value ?? "" : undefined}
             onChange={handleChange}
           />
           {icon}
         </div>
-        {isItemForm && errors[name] && (
+        {isItemForm && errors?.[name] && (
           <span className="ml-1 select-none text-sm text-red-500">
-            {errors[name]?.message as string}
+            {String(errors[name]?.message)}
           </span>
         )}
       </div>

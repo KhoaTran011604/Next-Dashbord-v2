@@ -1,6 +1,13 @@
 import { useDropzone } from "react-dropzone";
 import React from "react";
 
+interface imageProps {
+  fileName: string;
+  imageBase64String: string;
+  imageAbsolutePath: string;
+  imageFile: any;
+  isNewUpload: boolean;
+}
 const DropzoneComponentV2 = ({
   title = "",
   name,
@@ -10,11 +17,12 @@ const DropzoneComponentV2 = ({
   imagesInit = [],
   onUpload,
 }) => {
-  const [data, setData] = React.useState({
+  const [data, setData] = React.useState<imageProps>({
     fileName: "",
     imageBase64String: "",
     imageAbsolutePath: "",
     imageFile: null,
+    isNewUpload: false,
   });
 
   const [datas, setDatas] = React.useState([]);
@@ -26,10 +34,11 @@ const DropzoneComponentV2 = ({
         var dataUpload = {
           fileName: file.name,
           imageBase64String: e.target.result,
+          imageAbsolutePath: "",
           imageFile: typeDataReturn === "file" ? file : null,
           isNewUpload: true,
         };
-        setData(dataUpload);
+        setData(dataUpload as imageProps);
         setDatas([...datas, dataUpload]);
         onUpload([...datas, dataUpload]);
       };

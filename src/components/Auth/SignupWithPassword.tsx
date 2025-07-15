@@ -21,8 +21,8 @@ export default function SignupWithPassword() {
 
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = () => {
+    //e.preventDefault();
 
     // You can remove this code block
     setLoading(true);
@@ -42,8 +42,8 @@ export default function SignupWithPassword() {
       <HyperFormWrapper
         schema={registerSchema}
         defaultValues={initData}
-        onSubmit={(e) => {
-          handleSubmit(e);
+        onSubmit={() => {
+          handleSubmit();
         }}
         className="mx-auto max-w-md"
       >

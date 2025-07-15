@@ -1,4 +1,4 @@
-import type { IconProps } from "@/types/icon-props";
+import { IconProps } from "types/icon-props";
 
 export function SearchIcon(props: IconProps) {
   return (

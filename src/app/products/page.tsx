@@ -325,16 +325,6 @@ const ProductPage = () => {
           <HyperTodoTable_v2
             datas={data}
             columns={columns}
-            setOpen={() => {}}
-            handleCompletedTask={() => {}}
-            setTask={() => {}}
-            setOpenAlert={setOpenAlert}
-            viewCallback={(id) => {
-              handleViewDetail(id);
-            }}
-            deleteCallback={(item) => {
-              handleDeleteConform(item);
-            }}
             onRowDoubleClick={(item) => router.push(`/products/${item._id}`)}
           />
         )}

@@ -32,20 +32,20 @@ export type InputFieldProps = {
   onChange: ChangeEventHandler<HTMLInputElement>;
 };
 
-export type HD_InputProps = {
+export interface HD_InputProps {
   title?: string;
   isItemForm?: boolean;
   name: string;
   type?: string;
   placeholder?: string;
-  iconPosition?: string;
-  fileStyleVariant?: string;
-  height?: string;
-  icon?: React.ReactNode;
+  iconPosition?: "left" | "right";
+  fileStyleVariant?: "style1" | "style2";
+  height?: "sm" | "md" | "lg";
   disabled?: boolean;
-  initValue?: string;
-  onChange: (value: string) => void;
-};
+  icon?: React.ReactNode;
+  initValue?: string | number;
+  onChange?: (value: any) => void;
+}
 
 export type LoginProps = {
   email: string;
