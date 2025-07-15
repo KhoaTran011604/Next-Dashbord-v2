@@ -175,17 +175,15 @@ const ProductDetailPage = () => {
     const formData = new FormData();
 
     Object.entries(json).forEach(([key, value]) => {
-      if (
-        value instanceof File ||
-        typeof value === "string" ||
-        typeof value === "number" ||
-        typeof value === "boolean"
-      ) {
-        formData.append(key, value);
-      } else if (value !== null && typeof value === "object") {
+      // Bỏ qua nếu là File
+      if (value instanceof File) return;
+
+      // Nếu là object (bao gồm array), stringify
+      if (value !== null && typeof value === "object") {
         formData.append(key, JSON.stringify(value));
-      } else if (value === null) {
-        formData.append(key, "");
+      } else {
+        // Với string, number, boolean thì append trực tiếp
+        formData.append(key, String(value));
       }
     });
 
