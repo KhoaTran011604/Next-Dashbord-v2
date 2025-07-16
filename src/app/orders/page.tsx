@@ -26,7 +26,7 @@ import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import DefaultHeader from "@/components/default-header";
 import { cn } from "@/styles/lib/utils";
-
+import isEqual from "lodash/isEqual";
 import { PreviewIcon } from "@/components/Tables/icons";
 import {
   DropdownMenu,
@@ -59,8 +59,6 @@ const OrderPage = () => {
   const [keySearch, setKeySearch] = useState<string>("");
   const [itemDelete, setItemDelete] = useState({ name: "", _id: "" });
   const LoadData = () => {
-    console.log("load data");
-
     if (isLoading) {
       return;
     }
@@ -69,9 +67,9 @@ const OrderPage = () => {
       .then((response) => {
         if (response.success) {
           setData(response.data);
-          // queryClient.setQueryData(["#orderList"], () => {
-          //   return response.data; // thêm mới
-          // });
+          queryClient.setQueryData(["#orderList"], () => {
+            return response.data; // thêm mới
+          });
         }
       })
       .catch((err) => console.log(err))
@@ -269,22 +267,18 @@ const OrderPage = () => {
       enableHiding: false,
     }),
   ];
-  // useEffect(() => {
-  //   LoadData();
-  //   console.log("re-render");
-  // }, [filterPage]);
+
   const isFirstLoad = useRef(true); // 👈 đánh dấu lần render đầu tiên
-  console.log("cachedStore", cachedStore);
 
   useEffect(() => {
-    if (isFirstLoad.current) {
+    if (!isFirstLoad.current && !isEqual(filterPage, filterInit)) {
       LoadData();
-      isFirstLoad.current = false;
     } else {
-      !cachedStore ? LoadData() : setData(cachedStore as any[]);
-
+      cachedStore ? setData(cachedStore as any[]) : LoadData();
+      isFirstLoad.current = false;
       return;
     }
+    // Sau lần đầu tiên render
   }, [filterPage]);
 
   return (

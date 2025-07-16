@@ -30,7 +30,7 @@ import HyperTodoTable_v2 from "@/components/HyperTodoTable_v2";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import DefaultHeader from "@/components/default-header";
-
+import isEqual from "lodash/isEqual";
 import { PreviewIcon } from "@/components/Tables/icons";
 import {
   DropdownMenu,
@@ -56,7 +56,7 @@ import HyperFormWrapper from "@/components/HyperFormWrapper";
 import { HD_Button } from "@/components/common/HD_Button";
 import { reviewSchema } from "shemas/reviewSchema";
 import HD_TextArea from "@/components/common/HD_TextArea";
-import { comment } from "postcss";
+
 const filterInit = {
   keySearch: "",
   sort: {},
@@ -93,9 +93,9 @@ const ReviewPage = () => {
       .then((response) => {
         if (response.success) {
           setData(response.data);
-          // queryClient.setQueryData(["#reviewList"], () => {
-          //   return response.data; // thêm mới
-          // });
+          queryClient.setQueryData(["#reviewList"], () => {
+            return response.data; // thêm mới
+          });
         }
       })
       .catch((err) => console.log(err))
@@ -169,8 +169,6 @@ const ReviewPage = () => {
     });
   };
   const handleSubmit = () => {
-    console.log("submit");
-
     review._id.length > 0 ? handleUpdateReview() : handleSaveReview();
   };
   const onDebounce = useCallback(
@@ -284,17 +282,16 @@ const ReviewPage = () => {
   ];
 
   const isFirstLoad = useRef(true); // 👈 đánh dấu lần render đầu tiên
-  console.log("cachedStore", cachedStore);
 
   useEffect(() => {
-    if (isFirstLoad.current) {
+    if (!isFirstLoad.current && !isEqual(filterPage, filterInit)) {
       LoadData();
-      isFirstLoad.current = false;
     } else {
-      !cachedStore ? LoadData() : setData(cachedStore as any[]);
-
+      cachedStore ? setData(cachedStore as any[]) : LoadData();
+      isFirstLoad.current = false;
       return;
     }
+    // Sau lần đầu tiên render
   }, [filterPage]);
 
   return (

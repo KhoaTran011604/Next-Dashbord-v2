@@ -16,8 +16,6 @@ const Select = ({
   const [selectedValue, setSelectedValue] = useState<string>();
 
   const handleChange = (e) => {
-    console.log(e.target.value);
-
     const value = e.target.value;
     setSelectedValue(value);
     const selectedObj = options.find((opt) => opt.value === value);

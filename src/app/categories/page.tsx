@@ -30,7 +30,7 @@ import HyperTodoTable_v2 from "@/components/HyperTodoTable_v2";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import DefaultHeader from "@/components/default-header";
-
+import isEqual from "lodash/isEqual";
 import { PreviewIcon } from "@/components/Tables/icons";
 import {
   DropdownMenu,
@@ -87,9 +87,9 @@ const CategoryPage = () => {
       .then((response) => {
         if (response.success) {
           setData(response.data);
-          // queryClient.setQueryData(["#categoryList"], () => {
-          //   return response.data; // thêm mới
-          // });
+          queryClient.setQueryData(["#categoryList"], () => {
+            return response.data; // thêm mới
+          });
         }
       })
       .catch((err) => console.log(err))
@@ -163,8 +163,6 @@ const CategoryPage = () => {
     });
   };
   const handleSubmit = () => {
-    console.log("submit");
-
     category._id.length > 0 ? handleUpdateCategory() : handleSaveCategory();
   };
   const onDebounce = useCallback(
@@ -274,17 +272,16 @@ const CategoryPage = () => {
   ];
 
   const isFirstLoad = useRef(true); // 👈 đánh dấu lần render đầu tiên
-  console.log("cachedStore", cachedStore);
 
   useEffect(() => {
-    if (isFirstLoad.current) {
+    if (!isFirstLoad.current && !isEqual(filterPage, filterInit)) {
       LoadData();
-      isFirstLoad.current = false;
     } else {
-      !cachedStore ? LoadData() : setData(cachedStore as any[]);
-
+      cachedStore ? setData(cachedStore as any[]) : LoadData();
+      isFirstLoad.current = false;
       return;
     }
+    // Sau lần đầu tiên render
   }, [filterPage]);
 
   return (

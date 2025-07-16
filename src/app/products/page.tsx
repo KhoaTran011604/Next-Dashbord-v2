@@ -25,6 +25,7 @@ import HyperTodoTable_v2 from "@/components/HyperTodoTable_v2";
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import DefaultHeader from "@/components/default-header";
+import isEqual from "lodash/isEqual";
 import { cn } from "@/styles/lib/utils";
 import { ProductStatus } from "enum/productEnum";
 import { PreviewIcon } from "@/components/Tables/icons";
@@ -66,9 +67,9 @@ const ProductPage = () => {
       .then((response) => {
         if (response.success) {
           setData(response.data);
-          // queryClient.setQueryData(["#productList"], () => {
-          //   return response.data; // thêm mới
-          // });
+          queryClient.setQueryData(["#productList"], () => {
+            return response.data; // thêm mới
+          });
         }
       })
       .catch((err) => console.log(err))
@@ -139,8 +140,8 @@ const ProductPage = () => {
               }
               loading="lazy"
               className="aspect-[6/5] w-15 rounded-[5px] object-cover"
-              width={60}
-              height={50}
+              width={100}
+              height={100}
               alt={"Image for product " + info.row.original.name}
               role="presentation"
             />
@@ -259,22 +260,18 @@ const ProductPage = () => {
       enableHiding: false,
     }),
   ];
-  // useEffect(() => {
-  //   LoadData();
-  //   console.log("re-render");
-  // }, [filterPage]);
+
   const isFirstLoad = useRef(true); // 👈 đánh dấu lần render đầu tiên
-  console.log("cachedStore", cachedStore);
 
   useEffect(() => {
-    if (isFirstLoad.current) {
+    if (!isFirstLoad.current && !isEqual(filterPage, filterInit)) {
       LoadData();
-      isFirstLoad.current = false;
     } else {
-      !cachedStore ? LoadData() : setData(cachedStore as any[]);
-
+      cachedStore ? setData(cachedStore as any[]) : LoadData();
+      isFirstLoad.current = false;
       return;
     }
+    // Sau lần đầu tiên render
   }, [filterPage]);
 
   return (

@@ -54,8 +54,6 @@ const OrderDetailPage = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [errors, setErrors] = useState([]);
   const [request, setRequest] = useState(dataInit);
-  console.log("images", images);
-  console.log("request", request);
 
   const [categories, setCategories] = useState([
     {
@@ -94,7 +92,6 @@ const OrderDetailPage = () => {
         files: images.map((img) => img.imageBase64String),
       };
     }
-    console.log("images", images);
 
     SaveOrder_UploadMutli(request_v2)
       .then((response) => {
@@ -220,7 +217,6 @@ const OrderDetailPage = () => {
       if (response.success) {
         setRequest(response.data);
         setImages(response.data.images || []);
-        //console.log("response.data", response.data[0]);
       }
     });
   };

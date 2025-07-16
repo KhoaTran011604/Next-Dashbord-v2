@@ -40,8 +40,6 @@ const UserDetailPage = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [errors, setErrors] = useState([]);
   const [request, setRequest] = useState(dataInit);
-  console.log("images", images);
-  console.log("request", request);
 
   const [categories, setCategories] = useState([
     {

@@ -48,8 +48,6 @@ const ProductDetailPage = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [errors, setErrors] = useState([]);
   const [request, setRequest] = useState(dataInit);
-  console.log("images", images);
-  console.log("request", request);
 
   const [categories, setCategories] = useState([
     {
@@ -604,8 +602,8 @@ const ProductDetailPage = () => {
                                   ? itemImg.imageBase64String
                                   : itemImg.imageAbsolutePath
                               }
-                              className="w-full h-full"
-                              style={{ objectFit: "contain" }}
+                              className="w-full h-full rounded-sm"
+                              style={{ objectFit: "cover" }}
                             />
                             <div
                               className="hover:bg-red-500 absolute top-0 right-0  translate-x-2 -translate-y-2 p-2 bg-gray-800 text-white rounded-lg dark:bg-white dark:text-black"
