@@ -87,8 +87,9 @@ const CategoryPage = () => {
       .then((response) => {
         if (response.success) {
           setData(response.data);
-          const queryClient = useQueryClient();
-          const cachedStore = queryClient.getQueryData(["#categoryList"]);
+          // queryClient.setQueryData(["#categoryList"], () => {
+          //   return response.data; // thêm mới
+          // });
         }
       })
       .catch((err) => console.log(err))
@@ -276,14 +277,14 @@ const CategoryPage = () => {
   console.log("cachedStore", cachedStore);
 
   useEffect(() => {
-    if (!isFirstLoad.current) {
+    if (isFirstLoad.current) {
       LoadData();
+      isFirstLoad.current = false;
     } else {
-      cachedStore ? setData(cachedStore as []) : LoadData();
+      !cachedStore ? LoadData() : setData(cachedStore as any[]);
+
       return;
     }
-    // Sau lần đầu tiên render
-    isFirstLoad.current = false;
   }, [filterPage]);
 
   return (
@@ -309,7 +310,7 @@ const CategoryPage = () => {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>
-              {category._id.length > 0 ? "Update Product" : "Add Product"}
+              {category._id.length > 0 ? "Update Category" : "Add Category"}
             </DialogTitle>
             {/* <DialogDescription>
                                 Make changes to your profile here. Click save when you&apos;re
@@ -328,7 +329,7 @@ const CategoryPage = () => {
               <HD_Input
                 title="Name"
                 name="name"
-                placeholder="Press product name"
+                placeholder="Press category name"
                 type="text"
                 isItemForm={true}
                 initValue={category.name}

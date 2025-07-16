@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/styles/components/ui/alert-dialog";
-import { DeleteProduct, GetAllProduct } from "api/productService";
+import { DeleteOrder, GetAllOrder } from "api/orderService";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -26,7 +26,7 @@ import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import DefaultHeader from "@/components/default-header";
 import { cn } from "@/styles/lib/utils";
-import { ProductStatus } from "enum/productEnum";
+
 import { PreviewIcon } from "@/components/Tables/icons";
 import {
   DropdownMenu,
@@ -39,6 +39,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import OrderStatus, { PaymentStatus } from "enum/orderEnum";
 import { formatCurrencyVN } from "lib/format-number";
 const filterInit = {
   keySearch: "",
@@ -47,26 +48,28 @@ const filterInit = {
   pageSize: 10,
   sessionCode: Math.random().toString(),
 };
-const ProductPage = () => {
+const OrderPage = () => {
   const router = useRouter();
   const zustan = useStore();
   const queryClient = useQueryClient();
-  const cachedStore = queryClient.getQueryData(["#productList"]);
+  const cachedStore = queryClient.getQueryData(["#orderList"]);
   const { isLoading, setIsLoading, openAlert, setOpenAlert } = zustan;
   const [data, setData] = useState([]);
   const [filterPage, setFilterPage] = useState<Filter>(filterInit);
   const [keySearch, setKeySearch] = useState<string>("");
   const [itemDelete, setItemDelete] = useState({ name: "", _id: "" });
   const LoadData = () => {
+    console.log("load data");
+
     if (isLoading) {
       return;
     }
     setIsLoading(true);
-    GetAllProduct(filterPage)
+    GetAllOrder(filterPage)
       .then((response) => {
         if (response.success) {
           setData(response.data);
-          // queryClient.setQueryData(["#productList"], () => {
+          // queryClient.setQueryData(["#orderList"], () => {
           //   return response.data; // thêm mới
           // });
         }
@@ -75,14 +78,14 @@ const ProductPage = () => {
       .finally(() => setIsLoading(false));
   };
   const handleViewDetail = (id) => {
-    router.push(`/products/${id}`);
+    router.push(`/orders/${id}`);
   };
   const handleDeleteConform = (item) => {
     setItemDelete(item);
     setOpenAlert(true);
   };
   const handleDelete = (id) => {
-    DeleteProduct(id, {}).then((res) => {
+    DeleteOrder(id, {}).then((res) => {
       if (res.success) {
         LoadData();
         toast.success("Delete Success !", {
@@ -131,41 +134,27 @@ const ProductPage = () => {
       cell: (info) => {
         return (
           <div className="flex min-w-fit items-center gap-3  justify-start">
-            <img
-              src={
-                info.row.original.images.length > 0
-                  ? info.row.original.images[0].imageAbsolutePath
-                  : "/images/empty.png"
-              }
-              loading="lazy"
-              className="aspect-[6/5] w-15 rounded-[5px] object-cover"
-              width={60}
-              height={50}
-              alt={"Image for product " + info.row.original.name}
-              role="presentation"
-            />
-            <div>{info.row.original.name}</div>
+            <div>{info.row.original?.userId?.fullName}</div>
           </div>
         );
       },
     }),
-    columnHelper.accessor("price", {
-      header: (info) => <DefaultHeader info={info} name="Price" />,
+    columnHelper.accessor("totalAmount", {
+      header: (info) => <DefaultHeader info={info} name="Total" />,
       cell: (info) => {
         return (
           <div className="min-w-[155px] ">
-            <h5 className="text-dark dark:text-white">
-              {info.row.original.name}
-            </h5>
+            <h5 className="text-dark dark:text-white">{`${info.row.original.items.length} item`}</h5>
             <p className="mt-[3px] text-body-sm font-medium">
-              {`${formatCurrencyVN(info.row.original.price)} `}
+              {`${formatCurrencyVN(info.row.original.totalAmount)}`}
             </p>
           </div>
         );
       },
     }),
-    columnHelper.accessor("categoryName", {
-      header: (info) => <DefaultHeader info={info} name="Category" />,
+
+    columnHelper.accessor("paymentMethod", {
+      header: (info) => <DefaultHeader info={info} name="Payment Method" />,
       cell: (info) => {
         return info.getValue() || "_";
       },
@@ -179,15 +168,36 @@ const ProductPage = () => {
               "max-w-fit rounded-full px-3.5 py-1 text-sm font-medium",
               {
                 "bg-[#219653]/[0.08] text-[#219653]":
-                  info.row.original.status === ProductStatus.inStock,
+                  info.row.original.status === OrderStatus.Shipped,
                 "bg-[#D34053]/[0.08] text-[#D34053]":
-                  info.row.original.status === ProductStatus.outOfStock,
+                  info.row.original.status === OrderStatus.Cancelled,
                 "bg-[#FFA70B]/[0.08] text-[#FFA70B]":
-                  info.row.original.status === ProductStatus.pending,
+                  info.row.original.status === OrderStatus.Pending,
               }
             )}
           >
             {info.row.original.status}
+          </div>
+        );
+      },
+    }),
+
+    columnHelper.accessor("paymentStatus", {
+      header: (info) => <DefaultHeader info={info} name="Payment Status" />,
+      cell: (info) => {
+        return (
+          <div
+            className={cn(
+              "max-w-fit rounded-full px-3.5 py-1 text-sm font-medium",
+              {
+                "bg-[#219653]/[0.08] text-[#219653]":
+                  info.row.original.paymentStatus === PaymentStatus.Paid,
+                "bg-[#D34053]/[0.08] text-[#D34053]":
+                  info.row.original.paymentStatus === PaymentStatus.Unpaid,
+              }
+            )}
+          >
+            {info.row.original.paymentStatus}
           </div>
         );
       },
@@ -198,7 +208,7 @@ const ProductPage = () => {
       enableSorting: false,
       header: (info) => <DefaultHeader info={info} name="Actions" />,
       cell: ({ row }) => (
-        <div className="flex items-center justify-end gap-x-3.5">
+        <div className="flex items-center justify-start gap-x-3.5">
           <button
             className="hover:text-primary"
             onClick={() => handleViewDetail(row.original._id)}
@@ -279,7 +289,7 @@ const ProductPage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Products" />
+      <Breadcrumb pageName="Orders" />
       <AlertModal openAlert={openAlert} setOpenAlert={setOpenAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -309,15 +319,6 @@ const ProductPage = () => {
             onDebounce(value);
           }}
         />
-        <button
-          onClick={() => {
-            //handleSubmit();
-            router.push("/products/add");
-          }}
-          className="my-2 px-4 py-2 bg-black text-white rounded-lg"
-        >
-          Add
-        </button>
       </div>
       <div className="space-y-10">
         {isLoading ? (
@@ -326,7 +327,7 @@ const ProductPage = () => {
           <HyperTodoTable_v2
             datas={data}
             columns={columns}
-            onRowDoubleClick={(item) => router.push(`/products/${item._id}`)}
+            onRowDoubleClick={(item) => router.push(`/orders/${item._id}`)}
           />
         )}
       </div>
@@ -334,4 +335,4 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+export default OrderPage;

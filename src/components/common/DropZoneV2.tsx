@@ -79,7 +79,7 @@ const DropzoneComponentV2 = ({
               !readOnly ? "hover:border-brand-500" : ""
             }`}
           >
-            <form
+            <div
               {...(!readOnly ? getRootProps() : {})}
               className={`dropzone rounded-xl   border-dashed border-gray-300 p-7 lg:p-10
         ${
@@ -133,7 +133,7 @@ const DropzoneComponentV2 = ({
                   Browse File
                 </span>
               </div>
-            </form>
+            </div>
           </div>
         )}
       </div>

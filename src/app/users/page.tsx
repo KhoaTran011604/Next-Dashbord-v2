@@ -11,7 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/styles/components/ui/alert-dialog";
-import { DeleteProduct, GetAllProduct } from "api/productService";
+import { DeleteUser, GetAllUser } from "api/userService";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -26,7 +26,7 @@ import { ColumnDef, createColumnHelper } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import DefaultHeader from "@/components/default-header";
 import { cn } from "@/styles/lib/utils";
-import { ProductStatus } from "enum/productEnum";
+
 import { PreviewIcon } from "@/components/Tables/icons";
 import {
   DropdownMenu,
@@ -40,6 +40,7 @@ import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatCurrencyVN } from "lib/format-number";
+import { UserStatus } from "enum/userEnum";
 const filterInit = {
   keySearch: "",
   sort: {},
@@ -47,11 +48,11 @@ const filterInit = {
   pageSize: 10,
   sessionCode: Math.random().toString(),
 };
-const ProductPage = () => {
+const UserPage = () => {
   const router = useRouter();
   const zustan = useStore();
   const queryClient = useQueryClient();
-  const cachedStore = queryClient.getQueryData(["#productList"]);
+  const cachedStore = queryClient.getQueryData(["#userList"]);
   const { isLoading, setIsLoading, openAlert, setOpenAlert } = zustan;
   const [data, setData] = useState([]);
   const [filterPage, setFilterPage] = useState<Filter>(filterInit);
@@ -62,11 +63,11 @@ const ProductPage = () => {
       return;
     }
     setIsLoading(true);
-    GetAllProduct(filterPage)
+    GetAllUser(filterPage)
       .then((response) => {
         if (response.success) {
           setData(response.data);
-          // queryClient.setQueryData(["#productList"], () => {
+          // queryClient.setQueryData(["#userList"], () => {
           //   return response.data; // thêm mới
           // });
         }
@@ -75,14 +76,14 @@ const ProductPage = () => {
       .finally(() => setIsLoading(false));
   };
   const handleViewDetail = (id) => {
-    router.push(`/products/${id}`);
+    router.push(`/users/${id}`);
   };
   const handleDeleteConform = (item) => {
     setItemDelete(item);
     setOpenAlert(true);
   };
   const handleDelete = (id) => {
-    DeleteProduct(id, {}).then((res) => {
+    DeleteUser(id, {}).then((res) => {
       if (res.success) {
         LoadData();
         toast.success("Delete Success !", {
@@ -126,12 +127,12 @@ const ProductPage = () => {
       enableSorting: false,
       enableHiding: false,
     }),
-    columnHelper.accessor("name", {
+    columnHelper.accessor("fullName", {
       header: (info) => <DefaultHeader info={info} name="Info" />,
       cell: (info) => {
         return (
           <div className="flex min-w-fit items-center gap-3  justify-start">
-            <img
+            {/* <img
               src={
                 info.row.original.images.length > 0
                   ? info.row.original.images[0].imageAbsolutePath
@@ -141,35 +142,27 @@ const ProductPage = () => {
               className="aspect-[6/5] w-15 rounded-[5px] object-cover"
               width={60}
               height={50}
-              alt={"Image for product " + info.row.original.name}
+              alt={"Image for user " + info.row.original.name}
               role="presentation"
-            />
-            <div>{info.row.original.name}</div>
+            /> */}
+            <div>{info.row.original.fullName}</div>
           </div>
         );
       },
     }),
-    columnHelper.accessor("price", {
-      header: (info) => <DefaultHeader info={info} name="Price" />,
-      cell: (info) => {
-        return (
-          <div className="min-w-[155px] ">
-            <h5 className="text-dark dark:text-white">
-              {info.row.original.name}
-            </h5>
-            <p className="mt-[3px] text-body-sm font-medium">
-              {`${formatCurrencyVN(info.row.original.price)} `}
-            </p>
-          </div>
-        );
-      },
-    }),
-    columnHelper.accessor("categoryName", {
-      header: (info) => <DefaultHeader info={info} name="Category" />,
+    columnHelper.accessor("phone", {
+      header: (info) => <DefaultHeader info={info} name="Phone" />,
       cell: (info) => {
         return info.getValue() || "_";
       },
     }),
+    columnHelper.accessor("role", {
+      header: (info) => <DefaultHeader info={info} name="Role" />,
+      cell: (info) => {
+        return info.getValue() || "_";
+      },
+    }),
+
     columnHelper.accessor("status", {
       header: (info) => <DefaultHeader info={info} name="Status" />,
       cell: (info) => {
@@ -179,11 +172,9 @@ const ProductPage = () => {
               "max-w-fit rounded-full px-3.5 py-1 text-sm font-medium",
               {
                 "bg-[#219653]/[0.08] text-[#219653]":
-                  info.row.original.status === ProductStatus.inStock,
+                  info.row.original.status === UserStatus.active,
                 "bg-[#D34053]/[0.08] text-[#D34053]":
-                  info.row.original.status === ProductStatus.outOfStock,
-                "bg-[#FFA70B]/[0.08] text-[#FFA70B]":
-                  info.row.original.status === ProductStatus.pending,
+                  info.row.original.status === UserStatus.unAcitive,
               }
             )}
           >
@@ -198,7 +189,7 @@ const ProductPage = () => {
       enableSorting: false,
       header: (info) => <DefaultHeader info={info} name="Actions" />,
       cell: ({ row }) => (
-        <div className="flex items-center justify-end gap-x-3.5">
+        <div className="flex items-center justify-start gap-x-3.5">
           <button
             className="hover:text-primary"
             onClick={() => handleViewDetail(row.original._id)}
@@ -242,6 +233,20 @@ const ProductPage = () => {
             >
               Detail
             </DropdownMenuItem>
+            {/* <DropdownMenuItem
+              onClick={() => {
+                console.log("change password");
+              }}
+            >
+              Change Password
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                console.log("Active/UnActive");
+              }}
+            >
+              Active/UnActive
+            </DropdownMenuItem> */}
             <DropdownMenuItem
               onClick={() => {
                 handleDeleteConform({
@@ -279,7 +284,7 @@ const ProductPage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Products" />
+      <Breadcrumb pageName="Users" />
       <AlertModal openAlert={openAlert} setOpenAlert={setOpenAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -312,7 +317,7 @@ const ProductPage = () => {
         <button
           onClick={() => {
             //handleSubmit();
-            router.push("/products/add");
+            router.push("/users/add");
           }}
           className="my-2 px-4 py-2 bg-black text-white rounded-lg"
         >
@@ -326,7 +331,7 @@ const ProductPage = () => {
           <HyperTodoTable_v2
             datas={data}
             columns={columns}
-            onRowDoubleClick={(item) => router.push(`/products/${item._id}`)}
+            onRowDoubleClick={(item) => router.push(`/users/${item._id}`)}
           />
         )}
       </div>
@@ -334,4 +339,4 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+export default UserPage;

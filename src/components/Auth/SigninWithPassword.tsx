@@ -110,7 +110,12 @@ export default function SigninWithPassword() {
           }
           icon={<PasswordIcon />}
         />
-        <HD_Button title={"Sign In"} loading={loading} onClick={() => {}} />
+        <HD_Button
+          type={"submit"}
+          title={"Sign In"}
+          loading={loading}
+          onClick={() => {}}
+        />
       </HyperFormWrapper>
     </div>
   );

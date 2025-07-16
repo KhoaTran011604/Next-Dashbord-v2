@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Task } from 'types/MainType';
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { Task } from "types/MainType";
 
 type StoreState = {
   user: string | null;
@@ -34,6 +34,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
 export const useStore = () => {
   const context = useContext(StoreContext);
-  if (!context) throw new Error('useStore must be used within a StoreProvider');
+  if (!context) throw new Error("useStore must be used within a StoreProvider");
   return context;
 };
