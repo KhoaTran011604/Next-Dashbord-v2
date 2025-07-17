@@ -8,8 +8,10 @@ import { MenuIcon } from "./icons";
 import { Notification } from "./notification";
 import { ThemeToggleSwitch } from "./theme-toggle";
 import { UserInfo } from "./user-info";
+import { useAuth } from "context/auth";
 
 export function Header() {
+  const auth = useAuth();
   const { toggleSidebar, isMobile } = useSidebarContext();
 
   return (

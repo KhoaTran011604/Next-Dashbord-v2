@@ -7,6 +7,7 @@ export const NAV_DATA = [
       {
         title: "Dashboard",
         icon: Icons.HomeIcon,
+        oAuth: false,
         items: [
           {
             title: "eCommerce",
@@ -29,30 +30,36 @@ export const NAV_DATA = [
       {
         title: "Products",
         icon: Icons.Product,
+        oAuth: false,
         url: "/products",
         items: [],
       },
       {
         title: "Categories",
         icon: Icons.Category,
+
+        oAuth: false,
         url: "/categories",
         items: [],
       },
       {
         title: "Orders",
         icon: Icons.Order,
+        oAuth: false,
         url: "/orders",
         items: [],
       },
       {
         title: "Reviews",
         icon: Icons.Review,
+        oAuth: false,
         url: "/reviews",
         items: [],
       },
       {
         title: "Users",
         icon: Icons.User,
+        oAuth: false,
         url: "/users",
         items: [],
       },
@@ -137,6 +144,7 @@ export const NAV_DATA = [
       //     },
       {
         title: "Authentication",
+        oAuth: true,
         icon: Icons.Authentication,
         items: [
           {

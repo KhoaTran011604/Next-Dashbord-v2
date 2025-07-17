@@ -53,7 +53,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         refreshToken,
       });
       Cookies.set("token_info", encrypted, { expires: 7 }); // lưu 7 ngày
-
       setIsAuthenticated(true);
       router.push("/");
       return { success: true, data: dataToken };
@@ -66,6 +65,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return res.success ? true : false;
   };
   const logout = () => {
+    setUser(null);
+    setIsAuthenticated(false);
     return true;
   };
   const getTokensFromCookies = () => {
@@ -117,10 +118,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         vertifyToken();
       } else {
         //+Vertify false -> router push to login
-        router.push("/auth/sign-in");
+        router.replace("/auth/sign-in");
       }
     } else {
-      router.push("/auth/sign-in");
+      router.replace("/auth/sign-in");
     }
   };
 

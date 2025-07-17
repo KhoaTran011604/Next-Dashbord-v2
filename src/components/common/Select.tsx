@@ -67,7 +67,7 @@ const Select = ({
             </option>
           ))}
       </select>
-      {hint && (
+      {/* {hint && (
         <p
           className={`mt-1.5 text-xs ${
             error
@@ -79,7 +79,7 @@ const Select = ({
         >
           {hint}
         </p>
-      )}
+      )} */}
     </div>
   );
 };

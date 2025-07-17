@@ -35,19 +35,16 @@ export default function RootLayout({
         },
       })
   );
-  // useEffect(() => {
-  //   if (!isAuthenticated) {
-  //     router.push("/login");
-  //   }
-  // }, [isAuthenticated]);
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/auth/sign-in");
+    }
+  }, [isAuthenticated]);
 
-  //if (!isAuthenticated) return null; // Hoặc loading...
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
         <Providers>
-          {/* <NextTopLoader color="#5750F1" showSpinner={false} /> */}
-
           {isAuth ? (
             <div className="flex min-h-screen">
               <Sidebar />

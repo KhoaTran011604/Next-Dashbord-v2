@@ -27,29 +27,30 @@ export function UserInfo() {
     <Dropdown isOpen={isOpen} setIsOpen={setIsOpen}>
       <DropdownTrigger className="rounded align-middle outline-none ring-primary ring-offset-2 focus-visible:ring-1 dark:ring-offset-gray-dark">
         <span className="sr-only">My Account</span>
-
-        <figure className="flex items-center gap-3">
-          <Image
-            src={imagePath}
-            className="size-12 rounded-full"
-            alt={`Avatar of ${auth?.user?.fullName}`}
-            role="presentation"
-            width={200}
-            height={200}
-          />
-          <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-6 dark:text-white/90 max-[1024px]:sr-only">
-            <span>{auth?.user?.fullName}</span>
-
-            <ChevronUpIcon
-              aria-hidden
-              className={cn(
-                "rotate-180 transition-transform",
-                isOpen && "rotate-0"
-              )}
-              strokeWidth={1.5}
+        {auth.isAuthenticated && (
+          <figure className="flex items-center gap-3">
+            <Image
+              src={imagePath}
+              className="size-12 rounded-full"
+              alt={`Avatar of ${auth?.user?.fullName}`}
+              role="presentation"
+              width={200}
+              height={200}
             />
-          </figcaption>
-        </figure>
+            <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-6 dark:text-white/90 max-[1024px]:sr-only">
+              <span>{auth?.user?.fullName}</span>
+
+              <ChevronUpIcon
+                aria-hidden
+                className={cn(
+                  "rotate-180 transition-transform",
+                  isOpen && "rotate-0"
+                )}
+                strokeWidth={1.5}
+              />
+            </figcaption>
+          </figure>
+        )}
       </DropdownTrigger>
 
       <DropdownContent
@@ -122,8 +123,9 @@ export function UserInfo() {
                       queryClient.removeQueries({ queryKey: [key] });
                     }
                   );
+
                   Cookies.remove("token_info");
-                  router.push("/auth/sign-in");
+                  router.replace("/auth/sign-in");
                 }
               }}
             >

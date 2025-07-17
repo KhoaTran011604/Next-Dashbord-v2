@@ -23,6 +23,7 @@ import { orderSchema } from "shemas/orderSchema";
 import OrderStatus, { PaymentStatus } from "enum/orderEnum";
 import { useQueryClient } from "@tanstack/react-query";
 import useStore from "zustand/store";
+import AddDetailOrder from "@/components/Order/AddDetailOrder";
 
 const TYPE_OF_DATA_IMG_RETURN = "file";
 const dataInit = {
@@ -38,6 +39,7 @@ const dataInit = {
   //     },
   //   },
   // ],
+  items: [],
   totalAmount: 0,
   status: "Pending",
   shippingAddress: "",
@@ -281,34 +283,6 @@ const OrderDetailPage = () => {
               className="dark:bg-dark-900"
             />
           </div>
-          {/* <div>
-            <Select
-              {...{
-                error: errors.includes("categoryName"),
-                hint: errors.includes("categoryName") ? "Required field" : "",
-              }}
-              title={"Category"}
-              name={"categoryId"}
-              defaultValue={request.categoryId}
-              options={
-                categories?.length > 0
-                  ? categories.map((item) => ({
-                      label: item.name,
-                      value: item._id,
-                    }))
-                  : []
-              }
-              placeholder="Select an option"
-              onChange={(e) => {
-                setRequest({
-                  ...request,
-                  categoryId: e.value,
-                  categoryName: e.label,
-                });
-              }}
-              className="dark:bg-dark-900"
-            />
-          </div> */}
 
           <div>
             <HD_Input
@@ -326,7 +300,19 @@ const OrderDetailPage = () => {
               }
             />
           </div>
-
+          <div className="col-span-1 md:col-span-4">
+            <AddDetailOrder
+              isEdit={true}
+              initData={request.items}
+              isConfirm={false}
+              onChange={(response) => {
+                setRequest({
+                  ...request,
+                  items: response,
+                });
+              }}
+            />
+          </div>
           <div className="col-span-1 md:col-span-4">
             <HD_TextArea
               title="Description"

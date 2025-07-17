@@ -19,6 +19,9 @@ import { GetAllCategoryFK } from "api/categoryService";
 import HyperFormWrapper from "@/components/HyperFormWrapper";
 import { productSchema } from "shemas/productSchema";
 import useStore from "zustand/store";
+import { ProductStatus } from "enum/productEnum";
+import AddVariantsProduct from "@/components/Product/AddVariantsProduct";
+import { boolean } from "yup";
 
 const TYPE_OF_DATA_IMG_RETURN = "file";
 const dataInit = {
@@ -32,11 +35,6 @@ const dataInit = {
   brand: "",
   stock: 0,
   variants: [],
-  // {
-  //   color: String,
-  //   size: String,
-  //   quantity: Number
-  // }
 };
 const ProductDetailPage = () => {
   const params = useParams();
@@ -343,6 +341,44 @@ const ProductDetailPage = () => {
                   stock: parseInt(value),
                 })
               }
+            />
+          </div>
+          {isEdit && (
+            <div>
+              <Select
+                {...{
+                  error: errors.includes("status"),
+                  hint: errors.includes("status") ? "Required field" : "",
+                }}
+                title={"Status"}
+                name={"status"}
+                defaultValue={request.status}
+                options={Object.values(ProductStatus).map((val) => ({
+                  label: val,
+                  value: val,
+                }))}
+                placeholder="Select an option"
+                onChange={(e) => {
+                  setRequest({
+                    ...request,
+                    status: e.value,
+                  });
+                }}
+                className="dark:bg-dark-900"
+              />
+            </div>
+          )}
+          <div className="col-span-1 md:col-span-4">
+            <AddVariantsProduct
+              isEdit={true}
+              initData={request.variants}
+              isConfirm={false}
+              onChange={(res) => {
+                setRequest({
+                  ...request,
+                  variants: res,
+                });
+              }}
             />
           </div>
 

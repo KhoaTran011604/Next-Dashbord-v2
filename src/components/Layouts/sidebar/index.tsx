@@ -9,8 +9,10 @@ import { ArrowLeftIcon, ChevronUp } from "./icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
 import { Logo } from "@/components/logo";
+import { useAuth } from "context/auth";
 
 export function Sidebar() {
+  const auth = useAuth();
   const pathname = usePathname();
   const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
@@ -95,79 +97,86 @@ export function Sidebar() {
 
                 <nav role="navigation" aria-label={section.label}>
                   <ul className="space-y-2">
-                    {section.items.map((item) => (
-                      <li key={item.title}>
-                        {item.items.length ? (
-                          <div>
-                            <MenuItem
-                              isActive={item.items.some(
-                                ({ url }) => url === pathname
-                              )}
-                              onClick={() => toggleExpanded(item.title)}
-                            >
-                              <item.icon
-                                className="size-6 shrink-0"
-                                aria-hidden="true"
-                              />
+                    {section.items.map((item) => {
+                      const condition = item.oAuth === !auth.isAuthenticated;
+                      if (condition)
+                        return (
+                          <li key={item.title}>
+                            {item.items.length ? (
+                              <div>
+                                <MenuItem
+                                  isActive={item.items.some(
+                                    ({ url }) => url === pathname
+                                  )}
+                                  onClick={() => toggleExpanded(item.title)}
+                                >
+                                  <item.icon
+                                    className="size-6 shrink-0"
+                                    aria-hidden="true"
+                                  />
 
-                              <span>{item.title}</span>
+                                  <span>{item.title}</span>
 
-                              <ChevronUp
-                                className={cn(
-                                  "ml-auto rotate-180 transition-transform duration-200",
-                                  expandedItems.includes(item.title) &&
-                                    "rotate-0"
+                                  <ChevronUp
+                                    className={cn(
+                                      "ml-auto rotate-180 transition-transform duration-200",
+                                      expandedItems.includes(item.title) &&
+                                        "rotate-0"
+                                    )}
+                                    aria-hidden="true"
+                                  />
+                                </MenuItem>
+
+                                {expandedItems.includes(item.title) && (
+                                  <ul
+                                    className="ml-9 mr-0 space-y-1.5 pb-[15px] pr-0 pt-2"
+                                    role="menu"
+                                  >
+                                    {item.items.map((subItem) => (
+                                      <li key={subItem.title} role="none">
+                                        <MenuItem
+                                          as="link"
+                                          href={subItem.url}
+                                          isActive={pathname === subItem.url}
+                                        >
+                                          <span>{subItem.title}</span>
+                                        </MenuItem>
+                                      </li>
+                                    ))}
+                                  </ul>
                                 )}
-                                aria-hidden="true"
-                              />
-                            </MenuItem>
+                              </div>
+                            ) : (
+                              (() => {
+                                const href =
+                                  "url" in item
+                                    ? item.url + ""
+                                    : "/" +
+                                      item.title
+                                        .toLowerCase()
+                                        .split(" ")
+                                        .join("-");
 
-                            {expandedItems.includes(item.title) && (
-                              <ul
-                                className="ml-9 mr-0 space-y-1.5 pb-[15px] pr-0 pt-2"
-                                role="menu"
-                              >
-                                {item.items.map((subItem) => (
-                                  <li key={subItem.title} role="none">
-                                    <MenuItem
-                                      as="link"
-                                      href={subItem.url}
-                                      isActive={pathname === subItem.url}
-                                    >
-                                      <span>{subItem.title}</span>
-                                    </MenuItem>
-                                  </li>
-                                ))}
-                              </ul>
+                                return (
+                                  <MenuItem
+                                    className="flex items-center gap-3 py-3"
+                                    as="link"
+                                    href={href}
+                                    isActive={pathname === href}
+                                  >
+                                    <item.icon
+                                      className="size-6 shrink-0"
+                                      aria-hidden="true"
+                                    />
+
+                                    <span>{item.title}</span>
+                                  </MenuItem>
+                                );
+                              })()
                             )}
-                          </div>
-                        ) : (
-                          (() => {
-                            const href =
-                              "url" in item
-                                ? item.url + ""
-                                : "/" +
-                                  item.title.toLowerCase().split(" ").join("-");
-
-                            return (
-                              <MenuItem
-                                className="flex items-center gap-3 py-3"
-                                as="link"
-                                href={href}
-                                isActive={pathname === href}
-                              >
-                                <item.icon
-                                  className="size-6 shrink-0"
-                                  aria-hidden="true"
-                                />
-
-                                <span>{item.title}</span>
-                              </MenuItem>
-                            );
-                          })()
-                        )}
-                      </li>
-                    ))}
+                          </li>
+                        );
+                    })}
                   </ul>
                 </nav>
               </div>
