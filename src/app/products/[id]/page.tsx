@@ -452,7 +452,7 @@ const ProductDetailPage = () => {
               <Button
                 type="submit"
                 children={"Save"}
-                onClick={isEdit ? UpdateData : SaveData}
+                //onClick={isEdit ? UpdateData : SaveData}
               />
             </div>
           </div>
