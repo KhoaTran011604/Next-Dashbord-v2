@@ -2,7 +2,6 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DropzoneComponentV2 from "@/components/common/DropZoneV2";
 import HD_Input from "@/components/common/HD_Input";
-import HD_TextArea from "@/components/common/HD_TextArea";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import {
@@ -15,10 +14,10 @@ import { CloseIcon } from "assets/icons";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Select from "@/components/common/Select";
-import { GetAllCategoryFK } from "api/categoryService";
 import HyperFormWrapper from "@/components/HyperFormWrapper";
-import { loginSchema } from "shemas/loginSchema";
 import { userSchema } from "shemas/userSchema";
+import useStore from "zustand/store";
+import { userUpdateSchema } from "shemas/userUpdateSchema";
 
 const TYPE_OF_DATA_IMG_RETURN = "file";
 const dataInit = {
@@ -34,6 +33,8 @@ const UserDetailPage = () => {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
+  const zustand = useStore();
+  const { setHasDataChanged } = zustand;
   const [isBusy, setIsBusy] = useState(false);
   const [images, setImages] = useState([]);
   const [deleteImages, setDeleteImages] = useState([]);
@@ -41,25 +42,8 @@ const UserDetailPage = () => {
   const [errors, setErrors] = useState([]);
   const [request, setRequest] = useState(dataInit);
 
-  const [categories, setCategories] = useState([
-    {
-      _id: "id-1",
-      name: "Quần áo ",
-    },
-    {
-      _id: "id-2",
-      name: "Quần giày dép ",
-    },
-    {
-      _id: "id-3",
-      name: "Khác",
-    },
-  ]);
   const SaveData = async () => {
     if (isBusy) {
-      return;
-    }
-    if (!onValidate()) {
       return;
     }
     setIsBusy(true);
@@ -82,6 +66,7 @@ const UserDetailPage = () => {
     SaveUser_UploadMutli(request_v2)
       .then((response) => {
         if (response.success) {
+          setHasDataChanged(true);
           toast.success("Create Success !", {
             position: "bottom-right",
           });
@@ -99,9 +84,6 @@ const UserDetailPage = () => {
   };
   const UpdateData = async () => {
     if (isBusy) {
-      return;
-    }
-    if (!onValidate()) {
       return;
     }
     setIsBusy(true);
@@ -139,6 +121,7 @@ const UserDetailPage = () => {
     UpdateUser_UploadMutli(id, request_v2)
       .then((response) => {
         if (response.success) {
+          setHasDataChanged(true);
           router.push("/users");
           toast.success("Update Success !", {
             position: "bottom-right",
@@ -206,26 +189,7 @@ const UserDetailPage = () => {
       }
     });
   };
-  const LoadDataFK = async () => {
-    GetAllCategoryFK({})
-      .then((res) => {
-        if (res.success) {
-          setCategories(res.data);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {});
-  };
 
-  const onValidate = () => {
-    if (request.fullName?.length === 0) {
-      setErrors([...errors, "fullName"]);
-      return false;
-    }
-    return true;
-  };
   const handleDeleteImage = (img) => {
     var indexToRemove = images.indexOf(img);
 
@@ -236,11 +200,7 @@ const UserDetailPage = () => {
       setImages(copyImages);
     }
   };
-  // const sumTotal = useMemo(() => {
-  //   return gardenDetail.reduce((sum, item) => sum + item.number, 0);
-  // }, [gardenDetail]);
   useEffect(() => {
-    LoadDataFK();
     if (id !== undefined && id !== "add") {
       setIsEdit(true);
       LoadData();
@@ -252,11 +212,12 @@ const UserDetailPage = () => {
         pageName={id !== "add" ? "Edit" : "Create"}
         prePageTitle="Users"
         preLink="/users"
+        hiddenGoBackBtn={false}
       />
       <div className=" min-h-[calc(100vh-180px)] custom-scrollbar overflow-hidden  rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
         <HyperFormWrapper
-          schema={userSchema}
-          defaultValues={dataInit}
+          schema={isEdit ? userUpdateSchema : userSchema}
+          defaultValues={request}
           onSubmit={isEdit ? UpdateData : SaveData}
           className="grid grid-cols-1 md:grid-cols-4 gap-6"
         >
@@ -447,11 +408,7 @@ const UserDetailPage = () => {
           </div>
           <div className="col-span-1 md:col-span-4 flex justify-end py-2 ">
             <div>
-              <Button
-                type="submit"
-                children={"Save"}
-                //onClick={isEdit ? UpdateData : SaveData}
-              />
+              <Button type="submit" children={"Save"} />
             </div>
           </div>
         </HyperFormWrapper>

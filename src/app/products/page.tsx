@@ -51,6 +51,8 @@ const filterInit = {
 const ProductPage = () => {
   const router = useRouter();
   const zustan = useStore();
+  const { hasDataChanged, setHasDataChanged } = zustan;
+
   const queryClient = useQueryClient();
   const cachedStore = queryClient.getQueryData(["#productList"]);
   const { isLoading, setIsLoading, openAlert, setOpenAlert } = zustan;
@@ -68,8 +70,9 @@ const ProductPage = () => {
         if (response.success) {
           setData(response.data);
           queryClient.setQueryData(["#productList"], () => {
-            return response.data; // thêm mới
+            return response.data;
           });
+          setHasDataChanged(false);
         }
       })
       .catch((err) => console.log(err))
@@ -193,7 +196,6 @@ const ProductPage = () => {
         );
       },
     }),
-    // ✅ Dùng display thay vì accessor cho cột không có thật trong `Task`
     columnHelper.display({
       id: "actions",
       enableSorting: false,
@@ -264,14 +266,16 @@ const ProductPage = () => {
   const isFirstLoad = useRef(true); // 👈 đánh dấu lần render đầu tiên
 
   useEffect(() => {
-    if (!isFirstLoad.current && !isEqual(filterPage, filterInit)) {
+    if (
+      (!isFirstLoad.current && !isEqual(filterPage, filterInit)) ||
+      (!isFirstLoad.current && hasDataChanged)
+    ) {
       LoadData();
     } else {
       cachedStore ? setData(cachedStore as any[]) : LoadData();
       isFirstLoad.current = false;
       return;
     }
-    // Sau lần đầu tiên render
   }, [filterPage]);
 
   return (
@@ -311,7 +315,7 @@ const ProductPage = () => {
             //handleSubmit();
             router.push("/products/add");
           }}
-          className="my-2 px-4 py-2 bg-black text-white rounded-lg"
+          className="my-2 px-4 py-2 bg-black text-white rounded-lg dark:bg-gray-800 text-white"
         >
           Add
         </button>

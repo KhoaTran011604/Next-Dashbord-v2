@@ -1,7 +1,6 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { AlertModal } from "@/components/common/AlertModal";
-import { HD_Table } from "@/components/Tables/HD_Table";
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -50,10 +49,18 @@ const filterInit = {
 };
 const OrderPage = () => {
   const router = useRouter();
-  const zustan = useStore();
+  const zustand = useStore();
+
   const queryClient = useQueryClient();
   const cachedStore = queryClient.getQueryData(["#orderList"]);
-  const { isLoading, setIsLoading, openAlert, setOpenAlert } = zustan;
+  const {
+    isLoading,
+    setIsLoading,
+    openAlert,
+    setOpenAlert,
+    hasDataChanged,
+    setHasDataChanged,
+  } = zustand;
   const [data, setData] = useState([]);
   const [filterPage, setFilterPage] = useState<Filter>(filterInit);
   const [keySearch, setKeySearch] = useState<string>("");
@@ -68,8 +75,9 @@ const OrderPage = () => {
         if (response.success) {
           setData(response.data);
           queryClient.setQueryData(["#orderList"], () => {
-            return response.data; // thêm mới
+            return response.data;
           });
+          setHasDataChanged(false);
         }
       })
       .catch((err) => console.log(err))
@@ -200,7 +208,6 @@ const OrderPage = () => {
         );
       },
     }),
-    // ✅ Dùng display thay vì accessor cho cột không có thật trong `Task`
     columnHelper.display({
       id: "actions",
       enableSorting: false,
@@ -271,14 +278,16 @@ const OrderPage = () => {
   const isFirstLoad = useRef(true); // 👈 đánh dấu lần render đầu tiên
 
   useEffect(() => {
-    if (!isFirstLoad.current && !isEqual(filterPage, filterInit)) {
+    if (
+      (!isFirstLoad.current && !isEqual(filterPage, filterInit)) ||
+      (!isFirstLoad.current && hasDataChanged)
+    ) {
       LoadData();
     } else {
       cachedStore ? setData(cachedStore as any[]) : LoadData();
       isFirstLoad.current = false;
       return;
     }
-    // Sau lần đầu tiên render
   }, [filterPage]);
 
   return (

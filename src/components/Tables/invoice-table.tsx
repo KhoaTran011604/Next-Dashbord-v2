@@ -46,7 +46,7 @@ export function InvoiceTable() {
             //handleSubmit();
             router.push("/products/add");
           }}
-          className="my-2 px-4 py-2 bg-black text-white rounded-lg"
+          className="my-2 px-4 py-2 bg-black text-white rounded-lg dark:bg-gray-800 text-white"
         >
           Add
         </button>

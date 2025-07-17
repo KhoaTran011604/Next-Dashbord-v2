@@ -54,6 +54,7 @@ import {
 import HyperFormWrapper from "@/components/HyperFormWrapper";
 import { categorySchema } from "shemas/categorySchema";
 import { HD_Button } from "@/components/common/HD_Button";
+
 const filterInit = {
   keySearch: "",
   sort: {},
@@ -317,7 +318,7 @@ const CategoryPage = () => {
           <div className="">
             <HyperFormWrapper
               schema={categorySchema}
-              defaultValues={initData}
+              defaultValues={category}
               onSubmit={(e) => {
                 handleSubmit();
               }}
@@ -375,7 +376,7 @@ const CategoryPage = () => {
             setCategory(categoryInit);
             setOpen(true);
           }}
-          className="my-2 px-4 py-2 bg-black text-white rounded-lg"
+          className="my-2 px-4 py-2 bg-black text-white rounded-lg dark:bg-gray-700 text-white"
         >
           Add
         </button>

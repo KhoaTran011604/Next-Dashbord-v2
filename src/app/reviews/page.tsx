@@ -1,7 +1,7 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { AlertModal } from "@/components/common/AlertModal";
-import { HD_Table } from "@/components/Tables/HD_Table";
+
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -52,10 +52,9 @@ import {
   DialogTitle,
 } from "@/styles/components/ui/dialog";
 import HyperFormWrapper from "@/components/HyperFormWrapper";
-//import { reviewSchema } from "shemas/reviewSchema";
-import { HD_Button } from "@/components/common/HD_Button";
 import { reviewSchema } from "shemas/reviewSchema";
 import HD_TextArea from "@/components/common/HD_TextArea";
+import { request } from "http";
 
 const filterInit = {
   keySearch: "",
@@ -148,7 +147,6 @@ const ReviewPage = () => {
   };
   const handleViewDetail = (id) => {
     setOpen(true);
-    //router.push(`/categories/${id}`);
   };
   const handleDeleteConform = (item) => {
     setItemDelete(item);
@@ -319,15 +317,11 @@ const ReviewPage = () => {
             <DialogTitle>
               {review._id.length > 0 ? "Update Review" : "Add Review"}
             </DialogTitle>
-            {/* <DialogDescription>
-                                Make changes to your profile here. Click save when you&apos;re
-                                done.
-                            </DialogDescription> */}
           </DialogHeader>
           <div className="">
             <HyperFormWrapper
               schema={reviewSchema}
-              defaultValues={initData}
+              defaultValues={request}
               onSubmit={(e) => {
                 handleSubmit();
               }}

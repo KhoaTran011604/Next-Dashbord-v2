@@ -6,6 +6,7 @@ import HD_TextArea from "@/components/common/HD_TextArea";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import {
+  GetAllOrder,
   SaveOrder,
   SaveOrder_UploadMutli,
   SeachOrder,
@@ -17,11 +18,11 @@ import { CloseIcon } from "assets/icons";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Select from "@/components/common/Select";
-import { GetAllCategoryFK } from "api/categoryService";
 import HyperFormWrapper from "@/components/HyperFormWrapper";
-import { loginSchema } from "shemas/loginSchema";
 import { orderSchema } from "shemas/orderSchema";
-import { Description } from "@radix-ui/react-dialog";
+import OrderStatus, { PaymentStatus } from "enum/orderEnum";
+import { useQueryClient } from "@tanstack/react-query";
+import useStore from "zustand/store";
 
 const TYPE_OF_DATA_IMG_RETURN = "file";
 const dataInit = {
@@ -48,6 +49,8 @@ const OrderDetailPage = () => {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
+  const zustand = useStore();
+  const { setHasDataChanged } = zustand;
   const [isBusy, setIsBusy] = useState(false);
   const [images, setImages] = useState([]);
   const [deleteImages, setDeleteImages] = useState([]);
@@ -55,25 +58,8 @@ const OrderDetailPage = () => {
   const [errors, setErrors] = useState([]);
   const [request, setRequest] = useState(dataInit);
 
-  const [categories, setCategories] = useState([
-    {
-      _id: "id-1",
-      name: "Quần áo ",
-    },
-    {
-      _id: "id-2",
-      name: "Quần giày dép ",
-    },
-    {
-      _id: "id-3",
-      name: "Khác",
-    },
-  ]);
   const SaveData = async () => {
     if (isBusy) {
-      return;
-    }
-    if (!onValidate()) {
       return;
     }
     setIsBusy(true);
@@ -96,6 +82,7 @@ const OrderDetailPage = () => {
     SaveOrder_UploadMutli(request_v2)
       .then((response) => {
         if (response.success) {
+          setHasDataChanged(true);
           toast.success("Create Success !", {
             position: "bottom-right",
           });
@@ -113,9 +100,6 @@ const OrderDetailPage = () => {
   };
   const UpdateData = async () => {
     if (isBusy) {
-      return;
-    }
-    if (!onValidate()) {
       return;
     }
     setIsBusy(true);
@@ -153,6 +137,7 @@ const OrderDetailPage = () => {
     UpdateOrder_UploadMutli(id, request_v2)
       .then((response) => {
         if (response.success) {
+          setHasDataChanged(true);
           router.push("/orders");
           toast.success("Update Success !", {
             position: "bottom-right",
@@ -169,32 +154,11 @@ const OrderDetailPage = () => {
       });
   };
 
-  // const jsonToFormData = (json) => {
-  //   const formData = new FormData();
-  //   Object.entries(json).forEach(([key, value]) => {
-  //     formData.append(
-  //       key,
-  //       value instanceof Object && !(value instanceof File)
-  //         ? JSON.stringify(value)
-  //         : value
-  //     );
-  //   });
-  //   return formData;
-  // };
   const jsonToFormData = (json: Record<string, any>): FormData => {
     const formData = new FormData();
 
     Object.entries(json).forEach(([key, value]) => {
-      // Bỏ qua nếu là File
       if (value instanceof File) return;
-
-      // // Nếu là object (bao gồm array), stringify
-      // if (value !== null && typeof value === "object") {
-      //   formData.append(key, JSON.stringify(value));
-      // } else {
-      //   // Với string, number, boolean thì append trực tiếp
-      //   formData.append(key, String(value));
-      // }
 
       if (
         typeof value === "string" ||
@@ -220,26 +184,7 @@ const OrderDetailPage = () => {
       }
     });
   };
-  const LoadDataFK = async () => {
-    GetAllCategoryFK({})
-      .then((res) => {
-        if (res.success) {
-          setCategories(res.data);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {});
-  };
 
-  const onValidate = () => {
-    // if (request.name?.length === 0) {
-    //   setErrors([...errors, "name"]);
-    //   return false;
-    // }
-    return true;
-  };
   const handleDeleteImage = (img) => {
     var indexToRemove = images.indexOf(img);
 
@@ -254,7 +199,6 @@ const OrderDetailPage = () => {
   //   return gardenDetail.reduce((sum, item) => sum + item.number, 0);
   // }, [gardenDetail]);
   useEffect(() => {
-    LoadDataFK();
     if (id !== undefined && id !== "add") {
       setIsEdit(true);
       LoadData();
@@ -266,15 +210,16 @@ const OrderDetailPage = () => {
         pageName={id !== "add" ? "Edit" : "Create"}
         prePageTitle="Orders"
         preLink="/orders"
+        hiddenGoBackBtn={false}
       />
       <div className=" min-h-[calc(100vh-180px)] custom-scrollbar overflow-hidden  rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
         <HyperFormWrapper
           schema={orderSchema}
-          defaultValues={dataInit}
+          defaultValues={request}
           onSubmit={isEdit ? UpdateData : SaveData}
           className="grid grid-cols-1 md:grid-cols-4 gap-6"
         >
-          <div className="col-span-1 md:col-span-2">
+          <div className="col-span-1 md:col-span-3">
             <HD_Input
               title="Shipping Address"
               name="shippingAddress"
@@ -290,49 +235,50 @@ const OrderDetailPage = () => {
             />
           </div>
 
-          <div className="col-span-1 md:col-span-2">
-            <HD_Input
-              title="Status"
-              name="status"
-              placeholder=""
-              isItemForm={true}
-              initValue={request.status}
-              onChange={(value) =>
+          <div>
+            <Select
+              {...{
+                error: errors.includes("status"),
+                hint: errors.includes("status") ? "Required field" : "",
+              }}
+              title={"Status"}
+              name={"status"}
+              defaultValue={request.status}
+              options={Object.values(OrderStatus).map((val) => ({
+                label: val,
+                value: val,
+              }))}
+              placeholder="Select an option"
+              onChange={(e) => {
                 setRequest({
                   ...request,
-                  status: value,
-                })
-              }
+                  status: e.value,
+                });
+              }}
+              className="dark:bg-dark-900"
             />
           </div>
-          <div className="col-span-1 md:col-span-2">
-            <HD_Input
-              title="Payment Method"
-              name="paymentMethod"
-              placeholder=""
-              isItemForm={true}
-              initValue={request.paymentMethod}
-              onChange={(value) =>
+          <div>
+            <Select
+              {...{
+                error: errors.includes("paymentStatus"),
+                hint: errors.includes("paymentStatus") ? "Required field" : "",
+              }}
+              title={"Payment Status"}
+              name={"paymentStatus"}
+              defaultValue={request.paymentStatus}
+              options={Object.values(PaymentStatus).map((val) => ({
+                label: val,
+                value: val,
+              }))}
+              placeholder="Select an option"
+              onChange={(e) => {
                 setRequest({
                   ...request,
-                  paymentMethod: value,
-                })
-              }
-            />
-          </div>
-          <div className="col-span-1 md:col-span-2">
-            <HD_Input
-              title="Payment Status"
-              name="paymentStatus"
-              placeholder=""
-              isItemForm={true}
-              initValue={request.paymentStatus}
-              onChange={(value) =>
-                setRequest({
-                  ...request,
-                  paymentStatus: value,
-                })
-              }
+                  paymentStatus: e.value,
+                });
+              }}
+              className="dark:bg-dark-900"
             />
           </div>
           {/* <div>

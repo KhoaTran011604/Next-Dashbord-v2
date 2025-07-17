@@ -1,7 +1,6 @@
 "use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { AlertModal } from "@/components/common/AlertModal";
-import { HD_Table } from "@/components/Tables/HD_Table";
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -11,7 +10,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/styles/components/ui/alert-dialog";
-import { DeleteUser, GetAllUser } from "api/userService";
+import {
+  ChangePassword,
+  ChangeStatus,
+  DeleteUser,
+  GetAllUser,
+} from "api/userService";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -39,8 +43,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreVertical } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { formatCurrencyVN } from "lib/format-number";
 import { UserStatus } from "enum/userEnum";
+import { Modal } from "@/components/common/Modal";
+import {
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/styles/components/ui/dialog";
+import HyperFormWrapper from "@/components/HyperFormWrapper";
+import { changePasswordSchema } from "shemas/changePasswordSchema";
 const filterInit = {
   keySearch: "",
   sort: {},
@@ -48,16 +61,31 @@ const filterInit = {
   pageSize: 10,
   sessionCode: Math.random().toString(),
 };
+const requestInit = {
+  _id: "",
+  password: "",
+  status: "Actice",
+};
 const UserPage = () => {
   const router = useRouter();
-  const zustan = useStore();
+  const zustand = useStore();
   const queryClient = useQueryClient();
   const cachedStore = queryClient.getQueryData(["#userList"]);
-  const { isLoading, setIsLoading, openAlert, setOpenAlert } = zustan;
+  const {
+    isLoading,
+    setIsLoading,
+    open,
+    setOpen,
+    openAlert,
+    setOpenAlert,
+    hasDataChanged,
+    setHasDataChanged,
+  } = zustand;
   const [data, setData] = useState([]);
   const [filterPage, setFilterPage] = useState<Filter>(filterInit);
   const [keySearch, setKeySearch] = useState<string>("");
   const [itemDelete, setItemDelete] = useState({ name: "", _id: "" });
+  const [request, setRequest] = useState(requestInit);
   const LoadData = () => {
     if (isLoading) {
       return;
@@ -70,6 +98,7 @@ const UserPage = () => {
           queryClient.setQueryData(["#userList"], () => {
             return response.data; // thêm mới
           });
+          setHasDataChanged(false);
         }
       })
       .catch((err) => console.log(err))
@@ -183,7 +212,6 @@ const UserPage = () => {
         );
       },
     }),
-    // ✅ Dùng display thay vì accessor cho cột không có thật trong `Task`
     columnHelper.display({
       id: "actions",
       enableSorting: false,
@@ -233,20 +261,28 @@ const UserPage = () => {
             >
               Detail
             </DropdownMenuItem>
-            {/* <DropdownMenuItem
+            <DropdownMenuItem
               onClick={() => {
-                console.log("change password");
+                setRequest(row.original);
+                setOpen(true);
               }}
             >
               Change Password
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                console.log("Active/UnActive");
+                handleChangeStatus(
+                  row.original._id,
+                  row.original.status === UserStatus.active
+                    ? UserStatus.unAcitive
+                    : UserStatus.active
+                );
               }}
             >
-              Active/UnActive
-            </DropdownMenuItem> */}
+              {row.original.status === UserStatus.active
+                ? UserStatus.unAcitive
+                : UserStatus.active}
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
                 handleDeleteConform({
@@ -265,17 +301,68 @@ const UserPage = () => {
     }),
   ];
 
-  const isFirstLoad = useRef(true); // 👈 đánh dấu lần render đầu tiên
+  const handleChangePassword = () => {
+    if (isLoading) {
+      return;
+    }
+    setIsLoading(true);
 
+    ChangePassword(request._id, { password: request.password })
+      .then((res) => {
+        if (res.success) {
+          toast.success("Change Success!", {
+            position: "bottom-right",
+          });
+          setOpen(false);
+          LoadData();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+  console.log("req", request);
+
+  const handleChangeStatus = (_id, status) => {
+    if (isLoading) {
+      return;
+    }
+    setIsLoading(true);
+
+    ChangeStatus(_id, {
+      status,
+    })
+      .then((res) => {
+        if (res.success) {
+          toast.success("Change Success!", {
+            position: "bottom-right",
+          });
+          setOpen(false);
+          LoadData();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+  const isFirstLoad = useRef(true); // 👈 đánh dấu lần render đầu tiên
   useEffect(() => {
-    if (!isFirstLoad.current && !isEqual(filterPage, filterInit)) {
+    if (
+      (!isFirstLoad.current && !isEqual(filterPage, filterInit)) ||
+      (!isFirstLoad.current && hasDataChanged)
+    ) {
       LoadData();
     } else {
       cachedStore ? setData(cachedStore as any[]) : LoadData();
       isFirstLoad.current = false;
       return;
     }
-    // Sau lần đầu tiên render
   }, [filterPage]);
 
   return (
@@ -297,6 +384,53 @@ const UserPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertModal>
+
+      <Modal open={open} setOpen={setOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{"Update Password"}</DialogTitle>
+          </DialogHeader>
+          <div className="">
+            <HyperFormWrapper
+              schema={changePasswordSchema}
+              defaultValues={request}
+              onSubmit={() => {
+                handleChangePassword();
+              }}
+              className="mx-auto max-w-md"
+            >
+              <HD_Input
+                title="Password"
+                name="password"
+                placeholder="Press password"
+                type="text"
+                isItemForm={true}
+                initValue={request.password}
+                onChange={(value) =>
+                  setRequest({
+                    ...request,
+                    password: value,
+                  })
+                }
+              />
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setRequest(requestInit);
+                      setOpen(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button type="submit">{"Save"}</Button>
+              </DialogFooter>
+            </HyperFormWrapper>
+          </div>
+        </DialogContent>
+      </Modal>
       <div className="flex justify-between items-center">
         <HD_Input
           name="search"
@@ -312,10 +446,9 @@ const UserPage = () => {
         />
         <button
           onClick={() => {
-            //handleSubmit();
             router.push("/users/add");
           }}
-          className="my-2 px-4 py-2 bg-black text-white rounded-lg"
+          className="my-2 px-4 py-2 bg-black text-white rounded-lg dark:bg-gray-800 text-white"
         >
           Add
         </button>

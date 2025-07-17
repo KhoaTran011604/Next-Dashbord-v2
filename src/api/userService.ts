@@ -39,3 +39,13 @@ export async function DeleteUser(id, request) {
 
     return await Proxy("post", "/user/delete/" + id, request);
 }
+
+export async function ChangePassword(id, request) {
+
+    return await Proxy("post", "/user/change-password/" + id, request);
+}
+
+export async function ChangeStatus(id, request) {
+
+    return await Proxy("post", "/user/change-status/" + id, request);
+}

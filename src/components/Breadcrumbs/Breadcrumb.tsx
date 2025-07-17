@@ -1,22 +1,38 @@
-import { ArrowBigLeft, ArrowLeft } from "lucide-react";
+import { ArrowBigLeft, ArrowLeft, ChevronLeft } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface BreadcrumbProps {
   pageName: string;
   prePageTitle?: string;
   preLink?: string;
+  hiddenGoBackBtn?: boolean;
 }
 
 const Breadcrumb = ({
   pageName,
   prePageTitle = "Dashboard",
   preLink = "/",
+  hiddenGoBackBtn = true,
 }: BreadcrumbProps) => {
+  const router = useRouter();
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h2 className="text-[26px] font-bold leading-[30px] text-dark dark:text-white">
-        {pageName}
-      </h2>
+      <div className="flex items-center gap-4">
+        {!hiddenGoBackBtn && (
+          <div
+            onClick={() => {
+              router.push(preLink);
+            }}
+          >
+            <ChevronLeft />
+          </div>
+        )}
+
+        <h2 className="text-[26px] font-bold leading-[30px] text-dark dark:text-white">
+          {pageName}
+        </h2>
+      </div>
 
       <nav>
         <ol className="flex items-center gap-2">

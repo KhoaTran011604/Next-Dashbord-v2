@@ -1,7 +1,7 @@
-import React from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import type { AnyObjectSchema } from 'yup';
+import React, { useEffect } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import type { AnyObjectSchema } from "yup";
 
 type FormWrapperProps<T extends AnyObjectSchema> = {
   schema: T; ///dèauvalue
@@ -17,9 +17,11 @@ const HyperFormWrapper = <T extends AnyObjectSchema>({
   onSubmit,
   children,
   options,
-  className = '',
+  className = "",
   defaultValues,
 }: FormWrapperProps<T>) => {
+  console.log("defaultValues", defaultValues);
+
   const methods = useForm({
     resolver: yupResolver(schema),
     ...options,
@@ -32,7 +34,11 @@ const HyperFormWrapper = <T extends AnyObjectSchema>({
   //   JSON.stringify(currentValues) !== JSON.stringify(defaultValues);
 
   // console.log('Check  isDirty', isDirty);
-
+  useEffect(() => {
+    if (defaultValues) {
+      methods.reset(defaultValues); // ← rất quan trọng
+    }
+  }, [defaultValues]);
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)} className={className}>
