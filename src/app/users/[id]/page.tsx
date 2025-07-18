@@ -18,6 +18,7 @@ import HyperFormWrapper from "@/components/HyperFormWrapper";
 import { userSchema } from "shemas/userSchema";
 import useStore from "zustand/store";
 import { userUpdateSchema } from "shemas/userUpdateSchema";
+import LottieComponent from "@/components/lotties/lottie";
 
 const TYPE_OF_DATA_IMG_RETURN = "file";
 const dataInit = {
@@ -214,6 +215,9 @@ const UserDetailPage = () => {
         preLink="/users"
         hiddenGoBackBtn={false}
       />
+      isBusy ? (
+      <LottieComponent />
+      ):(
       <div className=" min-h-[calc(100vh-180px)] custom-scrollbar overflow-hidden  rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
         <HyperFormWrapper
           schema={isEdit ? userUpdateSchema : userSchema}
@@ -384,8 +388,8 @@ const UserDetailPage = () => {
                                   ? itemImg.imageBase64String
                                   : itemImg.imageAbsolutePath
                               }
-                              className="w-full h-full"
-                              style={{ objectFit: "contain" }}
+                              className="w-full h-full rounded-sm"
+                              style={{ objectFit: "cover" }}
                             />
                             <div
                               className="hover:bg-red-500 absolute top-0 right-0  translate-x-2 -translate-y-2 p-2 bg-gray-800 text-white rounded-lg dark:bg-white dark:text-black"
@@ -413,6 +417,7 @@ const UserDetailPage = () => {
           </div>
         </HyperFormWrapper>
       </div>
+      )
     </div>
   );
 };

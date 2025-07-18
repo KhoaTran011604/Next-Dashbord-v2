@@ -324,7 +324,6 @@ const UserPage = () => {
         setIsLoading(false);
       });
   };
-  console.log("req", request);
 
   const handleChangeStatus = (_id, status) => {
     if (isLoading) {

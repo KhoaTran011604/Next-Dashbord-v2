@@ -2,6 +2,7 @@ import { Button } from "@/styles/components/ui/button";
 import { Input } from "@/styles/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import React from "react";
+import HD_Input from "../common/HD_Input";
 
 type DetailItem = {
   id: number | null;
@@ -91,45 +92,68 @@ const AddVariantsProduct: React.FC<AddVariantsProductProps> = ({
 
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-2 border border-gray-300 dark:border-gray-500 rounded-lg p-2">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-2 border border-gray-300 dark:border-gray-800 rounded-lg p-2">
         {(!isEdit || (isEdit && !isConfirm)) && (
           <>
             <div>
-              <Label>Color</Label>
-              <Input
-                value={request.color}
-                //error={errors.includes("color")}
-                //hint={errors.includes("color") ? "Required" : ""}
-                onChange={(e) =>
-                  setRequest({ ...request, color: e.target.value })
+              <HD_Input
+                {...{
+                  error: errors.includes("color"),
+                  hint: errors.includes("color") ? "Required field" : "",
+                }}
+                title="Color"
+                name="color"
+                placeholder=""
+                isItemForm={false}
+                initValue={request.color}
+                onChange={(value) =>
+                  setRequest({
+                    ...request,
+                    color: value,
+                  })
                 }
               />
             </div>
             <div>
-              <Label>Size</Label>
-              <Input
-                value={request.size}
-                //error={errors.includes("size")}
-                //hint={errors.includes("size") ? "Required" : ""}
-                onChange={(e) =>
-                  setRequest({ ...request, size: e.target.value })
+              <HD_Input
+                {...{
+                  error: errors.includes("size"),
+                  hint: errors.includes("size") ? "Required field" : "",
+                }}
+                title="Size"
+                name="size"
+                placeholder=""
+                isItemForm={false}
+                initValue={request.size}
+                onChange={(value) =>
+                  setRequest({
+                    ...request,
+                    size: value,
+                  })
                 }
               />
             </div>
             <div>
-              <Label>Quantity</Label>
-              <Input
+              <HD_Input
+                {...{
+                  error: errors.includes("quantity"),
+                  hint: errors.includes("quantity") ? "Required field" : "",
+                }}
+                title="Qty"
+                name="quantity"
                 type="number"
-                className="text-right"
-                value={request.quantity}
-                //error={errors.includes("quantity")}
-                //hint={errors.includes("quantity") ? "Required" : ""}
-                onChange={(e) =>
-                  setRequest({ ...request, quantity: e.target.value })
+                placeholder=""
+                isItemForm={true}
+                initValue={request.quantity}
+                onChange={(value) =>
+                  setRequest({
+                    ...request,
+                    quantity: value,
+                  })
                 }
               />
             </div>
-            <div className="text-end space-x-2">
+            <div className="text-end space-x-2 m-auto">
               <Button
                 className="mt-6"
                 variant="outline"
@@ -154,7 +178,7 @@ const AddVariantsProduct: React.FC<AddVariantsProductProps> = ({
 
         {detail.length > 0 && (
           <>
-            <div className="border-t border-gray-300 col-span-full my-2"></div>
+            <div className="border-t border-gray-300 dark:border-gray-800 col-span-full my-2"></div>
             <div className="col-span-full">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">

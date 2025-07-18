@@ -1,4 +1,5 @@
 import { ChangeEventHandler } from "react";
+import { boolean, string } from "yup";
 
 export type Task = {
   _id: string;
@@ -45,6 +46,10 @@ export interface HD_InputProps {
   icon?: React.ReactNode;
   initValue?: string | number;
   onChange?: (value: any) => void;
+  oForm_errors?: any[];
+  success?: boolean;
+  error?: boolean;
+  hint?: string;
 }
 
 export type LoginProps = {

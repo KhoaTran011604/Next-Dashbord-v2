@@ -20,8 +20,6 @@ const HyperFormWrapper = <T extends AnyObjectSchema>({
   className = "",
   defaultValues,
 }: FormWrapperProps<T>) => {
-  console.log("defaultValues", defaultValues);
-
   const methods = useForm({
     resolver: yupResolver(schema),
     ...options,

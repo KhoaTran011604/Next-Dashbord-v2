@@ -55,8 +55,7 @@ export function Header() {
         </div>
 
         <ThemeToggleSwitch />
-
-        <Notification />
+        {auth.isAuthenticated && <Notification />}
 
         <div className="shrink-0">
           <UserInfo />

@@ -68,8 +68,6 @@ const AddDetailOrder: React.FC<AddDetailOrderProps> = ({
   const [products, setProducts] = React.useState<ProductProps[]>([]);
   const [seletedProduct, setSeletedProduct] =
     React.useState<ProductProps>(INIT_PRODUCT);
-  console.log("request", request);
-  console.log("initData", initData);
 
   const onValidate = () => {
     const listError: string[] = [];
@@ -144,10 +142,9 @@ const AddDetailOrder: React.FC<AddDetailOrderProps> = ({
     }
     if (initData?.length) setDetail(initData);
   }, [initData]);
-
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-2 border border-gray-300 dark:border-gray-500 rounded-lg p-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-2 border border-gray-300 dark:border-gray-800 rounded-lg p-4">
         {(!isEdit || (isEdit && !isConfirm)) && (
           <>
             <div>
@@ -210,7 +207,7 @@ const AddDetailOrder: React.FC<AddDetailOrderProps> = ({
                 }}
                 title={"Selected Variant"}
                 name={"selectedVariant"}
-                defaultValue={"xxx"}
+                defaultValue={request?.selectedVariant?.id}
                 options={
                   !seletedProduct.variants
                     ? []
@@ -224,7 +221,6 @@ const AddDetailOrder: React.FC<AddDetailOrderProps> = ({
                   const variantSelected = seletedProduct.variants.find(
                     (pro) => pro.id === e.value
                   );
-                  console.log("variantSelected", variantSelected);
 
                   setRequest({
                     ...request,
@@ -236,6 +232,10 @@ const AddDetailOrder: React.FC<AddDetailOrderProps> = ({
             </div>
             <div>
               <HD_Input
+                {...{
+                  error: errors.includes("quantity"),
+                  hint: errors.includes("quantity") ? "Required field" : "",
+                }}
                 title="Quantity"
                 name="quantity"
                 type="number"
@@ -275,7 +275,7 @@ const AddDetailOrder: React.FC<AddDetailOrderProps> = ({
 
         {detail.length > 0 && (
           <>
-            <div className="border-t border-gray-300 col-span-full my-2"></div>
+            <div className="border-t border-gray-300  dark:border-gray-800 col-span-full my-2"></div>
             <div className="col-span-full">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -295,23 +295,22 @@ const AddDetailOrder: React.FC<AddDetailOrderProps> = ({
                         className="bg-white dark:bg-gray-800 border-b dark:border-gray-700"
                         onClick={() => {
                           setRequest(item);
-                          console.log("item", item);
 
                           const productSelected = products.find(
                             (pro) => pro._id === item.productId
                           );
-                          var selectedVariantDefault = {};
-                          if (productSelected.variants) {
-                            selectedVariantDefault =
-                              productSelected.variants[0];
-                          }
                           setSeletedProduct(productSelected);
+                          setRequest(item);
                         }}
                       >
                         <td className="px-6 py-4">{item.productName}</td>
                         <td className="px-6 py-4">{item.price}</td>
 
-                        <td className="px-6 py-4 ">{`${item.selectedVariant?.color} - ${item.selectedVariant?.size}`}</td>
+                        <td className="px-6 py-4 ">
+                          {item.selectedVariant
+                            ? `${item.selectedVariant?.color} - ${item.selectedVariant?.size}`
+                            : "Default"}
+                        </td>
                         <td className="px-6 py-4 text-end">{item.quantity}</td>
                         <td className="px-6 py-4 text-end">
                           <Button

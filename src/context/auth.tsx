@@ -93,7 +93,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (response.success) {
       setIsAuthenticated(true);
-      console.log("response", response);
 
       setUser(response.data);
       router.push("/");

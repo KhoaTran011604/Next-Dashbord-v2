@@ -182,7 +182,20 @@ const OrderDetailPage = () => {
   const LoadData = async () => {
     SeachOrder(id, {}).then((response) => {
       if (response.success) {
-        setRequest(response.data);
+        var orderDetail = response.data.items;
+        if (
+          Array.isArray(orderDetail) &&
+          orderDetail.length === 1 &&
+          typeof orderDetail[0] === "object" &&
+          orderDetail[0] !== null &&
+          Object.keys(orderDetail[0]).length === 0
+        ) {
+          orderDetail = [];
+        }
+        setRequest({
+          ...response.data,
+          items: orderDetail,
+        });
         setImages(response.data.images || []);
       }
     });
@@ -363,8 +376,8 @@ const OrderDetailPage = () => {
                                     ? itemImg.imageBase64String
                                     : itemImg.imageAbsolutePath
                                 }
-                                className="w-full h-full"
-                                style={{ objectFit: "contain" }}
+                                className="w-full h-full rounded-sm"
+                                style={{ objectFit: "cover" }}
                               />
                               <div
                                 className="hover:bg-red-500 absolute top-0 right-0  translate-x-2 -translate-y-2 p-2 bg-gray-800 text-white rounded-lg dark:bg-white dark:text-black"

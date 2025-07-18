@@ -16,6 +16,10 @@ const HD_Input = ({
   icon = <></>,
   initValue,
   onChange,
+  oForm_errors = [],
+  success = false,
+  error = false,
+  hint,
 }: HD_InputProps) => {
   const [value, setValue] = useState<string | number | undefined>(initValue);
   const formContext = isItemForm ? useFormContext() : null;
@@ -73,6 +77,19 @@ const HD_Input = ({
           <span className="ml-1 select-none text-sm text-red-500">
             {String(errors[name]?.message)}
           </span>
+        )}
+        {hint && (
+          <p
+            className={`mt-1.5 text-xs ${
+              error
+                ? "text-red-500"
+                : success
+                ? "text-green-500"
+                : "text-gray-500"
+            }`}
+          >
+            {hint}
+          </p>
         )}
       </div>
     </>
