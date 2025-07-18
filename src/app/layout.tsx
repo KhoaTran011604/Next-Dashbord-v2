@@ -35,11 +35,11 @@ export default function RootLayout({
         },
       })
   );
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/auth/sign-in");
-    }
-  }, [isAuthenticated]);
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     router.push("/auth/sign-in");
+  //   }
+  // }, [isAuthenticated]);
 
   return (
     <html lang="en" suppressHydrationWarning>
