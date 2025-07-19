@@ -278,6 +278,21 @@ const OrderDetailPage = () => {
               />
             </div>
             <div>
+              <HD_Input
+                title="Payment Method"
+                name="paymentMethod"
+                placeholder=""
+                isItemForm={true}
+                initValue={request.paymentMethod}
+                onChange={(value) =>
+                  setRequest({
+                    ...request,
+                    paymentMethod: value,
+                  })
+                }
+              />
+            </div>
+            <div>
               <Select
                 {...{
                   error: errors.includes("paymentStatus"),

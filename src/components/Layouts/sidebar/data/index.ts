@@ -7,7 +7,6 @@ export const NAV_DATA = [
       {
         title: "Dashboard",
         icon: Icons.HomeIcon,
-        oAuth: false,
         items: [
           {
             title: "eCommerce",
@@ -15,137 +14,52 @@ export const NAV_DATA = [
           },
         ],
       },
-      // {
-      //   title: "1.Tasks",
-      //   icon: Icons.Alphabet,
-      //   url: "/table-tasks",
-      //   items: [],
-      // },
-      // {
-      //   title: "2.Tasks",
-      //   icon: Icons.Alphabet,
-      //   url: "/tanstack-table-tasks",
-      //   items: [],
-      // },
       {
         title: "Products",
-        icon: Icons.Product,
-        oAuth: false,
         url: "/products",
+        oAuth: false,
+        icon: Icons.FourCircle,
         items: [],
       },
       {
         title: "Categories",
-        icon: Icons.Category,
-
-        oAuth: false,
         url: "/categories",
+        oAuth: false,
+        icon: Icons.Alphabet,
         items: [],
       },
       {
         title: "Orders",
-        icon: Icons.Order,
-        oAuth: false,
         url: "/orders",
+        oAuth: false,
+        icon: Icons.Table,
         items: [],
       },
       {
         title: "Reviews",
-        icon: Icons.Review,
-        oAuth: false,
         url: "/reviews",
+        oAuth: false,
+        icon: Icons.Alphabet,
         items: [],
       },
       {
         title: "Users",
-        icon: Icons.User,
-        oAuth: false,
         url: "/users",
+        oAuth: false,
+        icon: Icons.User,
         items: [],
       },
 
+    ],
+  },
+  {
+    label: "OTHERS",
+    items: [
 
-
-      //     {
-      //       title: "Calendar",
-      //       url: "/calendar",
-      //       icon: Icons.Calendar,
-      //       items: [],
-      //     },
-      //     {
-      //       title: "Profile",
-      //       url: "/profile",
-      //       icon: Icons.User,
-      //       items: [],
-      //     },
-      //     {
-      //       title: "Forms",
-      //       icon: Icons.Alphabet,
-      //       items: [
-      //         {
-      //           title: "Form Elements",
-      //           url: "/forms/form-elements",
-      //         },
-      //         {
-      //           title: "Form Layout",
-      //           url: "/forms/form-layout",
-      //         },
-      //       ],
-      //     },
-      //     {
-      //       title: "Tables",
-      //       url: "/tables",
-      //       icon: Icons.Table,
-      //       items: [
-      //         {
-      //           title: "Tables",
-      //           url: "/tables",
-      //         },
-      //       ],
-      //     },
-      //     {
-      //       title: "Pages",
-      //       icon: Icons.Alphabet,
-      //       items: [
-      //         {
-      //           title: "Settings",
-      //           url: "/pages/settings",
-      //         },
-      //       ],
-      //     },
-      //   ],
-      // },
-      // {
-      //   label: "OTHERS",
-      //   items: [
-      //     {
-      //       title: "Charts",
-      //       icon: Icons.PieChart,
-      //       items: [
-      //         {
-      //           title: "Basic Chart",
-      //           url: "/charts/basic-chart",
-      //         },
-      //       ],
-      //     },
-      //     {
-      //       title: "UI Elements",
-      //       icon: Icons.FourCircle,
-      //       items: [
-      //         {
-      //           title: "Alerts",
-      //           url: "/ui-elements/alerts",
-      //         },
-      //         {
-      //           title: "Buttons",
-      //           url: "/ui-elements/buttons",
-      //         },
-      //       ],
-      //     },
       {
         title: "Authentication",
-        oAuth: true,
         icon: Icons.Authentication,
+        oAuth: true,
         items: [
           {
             title: "Sign In",
